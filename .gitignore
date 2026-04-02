@@ -1,5 +1,6 @@
 # Build
 build/
+**/build/
 target/
 *.class
 *.jar
@@ -8,10 +9,22 @@ target/
 .idea/
 *.iml
 .vscode/
+.project
+.classpath
+.settings/
+**/.settings/
+bin/
+**/bin/
 
 # Gradle
 .gradle/
-gradle/
+
+# Docker
+docker-data/
+
+# Local runtime
+data/
+.gradle-user-home/
 
 # OS
 .DS_Store

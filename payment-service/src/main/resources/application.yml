@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: payment-service
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8082
+
+inventory-service:
+  url: http://localhost:8083
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

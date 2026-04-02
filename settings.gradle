@@ -1,0 +1,6 @@
+rootProject.name = 'order-saga-mvp'
+
+include 'order-service'
+include 'payment-service'
+include 'inventory-service'
+include 'scenario-test'

@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: inventory-service
+  jpa:
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8083
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

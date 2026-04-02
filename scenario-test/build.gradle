@@ -1,0 +1,13 @@
+dependencies {
+    testImplementation project(':order-service')
+    testImplementation project(':payment-service')
+    testImplementation project(':inventory-service')
+}
+
+tasks.named('bootJar') {
+    enabled = false
+}
+
+tasks.named('jar') {
+    enabled = true
+}
