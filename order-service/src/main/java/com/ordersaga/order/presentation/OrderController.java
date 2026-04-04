@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.ordersaga.order.application.CreateOrderCommand;
 import com.ordersaga.order.application.OrderApplicationService;
+import com.ordersaga.order.application.OrderProcessor;
 import com.ordersaga.order.application.OrderResult;
 import com.ordersaga.order.presentation.dto.CreateOrderRequest;
 import jakarta.validation.Valid;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
+    private final OrderProcessor orderProcessor;
     private final OrderApplicationService orderApplicationService;
 
-    public OrderController(OrderApplicationService orderApplicationService) {
+    public OrderController(OrderProcessor orderProcessor, OrderApplicationService orderApplicationService) {
+        this.orderProcessor = orderProcessor;
         this.orderApplicationService = orderApplicationService;
     }
 
@@ -45,7 +48,7 @@ public class OrderController {
                 request.amount(),
                 request.forceInventoryFailure()
         );
-        return orderApplicationService.createOrder(command);
+        return orderProcessor.processOrder(command);
     }
 }
 

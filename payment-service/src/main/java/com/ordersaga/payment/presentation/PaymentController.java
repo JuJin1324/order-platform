@@ -3,7 +3,7 @@ package com.ordersaga.payment.presentation;
 import java.util.Map;
 
 import com.ordersaga.payment.application.ChargePaymentCommand;
-import com.ordersaga.payment.application.PaymentApplicationService;
+import com.ordersaga.payment.application.PaymentProcessor;
 import com.ordersaga.payment.application.PaymentResult;
 import com.ordersaga.payment.presentation.dto.ChargePaymentRequest;
 import jakarta.validation.Valid;
@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/internal/payments")
 public class PaymentController {
-    private final PaymentApplicationService paymentApplicationService;
+    private final PaymentProcessor paymentProcessor;
 
-    public PaymentController(PaymentApplicationService paymentApplicationService) {
-        this.paymentApplicationService = paymentApplicationService;
+    public PaymentController(PaymentProcessor paymentProcessor) {
+        this.paymentProcessor = paymentProcessor;
     }
 
     @GetMapping("/health")
@@ -40,6 +40,6 @@ public class PaymentController {
                 request.quantity(),
                 request.forceInventoryFailure()
         );
-        return paymentApplicationService.chargePayment(command);
+        return paymentProcessor.chargePayment(command);
     }
 }

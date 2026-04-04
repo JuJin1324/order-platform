@@ -1,9 +1,8 @@
 package com.ordersaga.payment.application;
 
-import com.ordersaga.payment.domain.Payment;
-import com.ordersaga.payment.domain.PaymentRepository;
 import com.ordersaga.payment.domain.PaymentStatus;
 import com.ordersaga.payment.fixture.ChargePaymentCommandFixture;
+import com.ordersaga.payment.fixture.PaymentFixtureValues;
 import com.ordersaga.payment.infrastructure.InventoryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,9 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
@@ -24,18 +20,18 @@ import static org.mockito.BDDMockito.given;
 class ChargePaymentApplicationTest {
 
     @Mock
-    private PaymentRepository paymentRepository;
+    private PaymentApplicationService paymentApplicationService;
 
     @Mock
     private InventoryClient inventoryClient;
 
-    private PaymentApplicationService sut;
+    private PaymentProcessor sut;
+
+    private static final String PAYMENT_ID = "test-payment-id";
 
     @BeforeEach
     void setUp() {
-        sut = new PaymentApplicationService(paymentRepository, inventoryClient);
-        given(paymentRepository.save(any(Payment.class)))
-                .willAnswer(invocation -> invocation.getArgument(0));
+        sut = new PaymentProcessor(paymentApplicationService, inventoryClient);
     }
 
     @Test
@@ -43,6 +39,9 @@ class ChargePaymentApplicationTest {
     void inventorySuccess_paymentStatusCompleted() {
         // Given
         ChargePaymentCommand command = ChargePaymentCommandFixture.normal();
+        PaymentResult paymentResult = new PaymentResult(PAYMENT_ID, command.orderId(), PaymentStatus.COMPLETED, command.amount());
+
+        given(paymentApplicationService.processPayment(command)).willReturn(paymentResult);
         given(inventoryClient.deductInventory(eq(command.sku()), eq(command.quantity()), eq(command.forceInventoryFailure())))
                 .willReturn(true);
 
@@ -59,6 +58,9 @@ class ChargePaymentApplicationTest {
     void inventoryFailure_throwsException() {
         // Given
         ChargePaymentCommand command = ChargePaymentCommandFixture.withForceInventoryFailure();
+        PaymentResult paymentResult = new PaymentResult(PAYMENT_ID, command.orderId(), PaymentStatus.COMPLETED, command.amount());
+
+        given(paymentApplicationService.processPayment(command)).willReturn(paymentResult);
         given(inventoryClient.deductInventory(eq(command.sku()), eq(command.quantity()), eq(command.forceInventoryFailure())))
                 .willReturn(false);
 
