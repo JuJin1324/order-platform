@@ -1,6 +1,5 @@
 package com.ordersaga.inventory.application;
 
-import com.ordersaga.inventory.fixture.InventoryFixtureValues;
 import com.ordersaga.inventory.infrastructure.kafka.InventoryEventPublisher;
 import com.ordersaga.saga.event.InventoryDeductedEvent;
 import com.ordersaga.saga.event.PaymentCompletedEvent;
@@ -26,44 +25,60 @@ class InventoryEventProcessorTest {
     @Mock
     private InventoryEventPublisher inventoryEventPublisher;
 
-    private InventoryEventProcessor sut;
+    private InventoryEventProcessor inventoryEventProcessor;
 
     @BeforeEach
     void setUp() {
-        sut = new InventoryEventProcessor(inventoryApplicationService, inventoryEventPublisher);
+        inventoryEventProcessor = new InventoryEventProcessor(inventoryApplicationService, inventoryEventPublisher);
     }
 
     @Test
     @DisplayName("payment-completed 이벤트를 재고 차감으로 처리하고 inventory-deducted 이벤트를 발행한다")
     void handlePaymentCompleted_deductsInventoryAndPublishesNextEvent() {
         // Given
-        PaymentCompletedEvent event = new PaymentCompletedEvent(
+        PaymentCompletedEvent receivedEvent = receivedPaymentCompletedEvent();
+        DeductInventoryResult deductedInventory = expectedDeductedInventory();
+
+        given(inventoryApplicationService.deductInventory(any(DeductInventoryCommand.class)))
+                .willReturn(deductedInventory);
+
+        // When
+        DeductInventoryResult actualDeductedInventory = inventoryEventProcessor.handlePaymentCompleted(receivedEvent);
+
+        // Then
+        assertThat(actualDeductedInventory).isEqualTo(deductedInventory);
+        then(inventoryApplicationService).should().deductInventory(expectedDeductInventoryCommand(receivedEvent));
+        then(inventoryEventPublisher).should().publishInventoryDeducted(expectedInventoryDeductedEvent(receivedEvent));
+    }
+
+    private PaymentCompletedEvent receivedPaymentCompletedEvent() {
+        return new PaymentCompletedEvent(
                 ORDER_ID,
                 PAYMENT_ID,
                 AMOUNT,
                 SKU,
                 DEDUCT_QUANTITY
         );
-        DeductInventoryResult deductInventoryResult = new DeductInventoryResult(SKU, DEDUCT_QUANTITY, REMAINING_QUANTITY);
+    }
 
-        given(inventoryApplicationService.deductInventory(any(DeductInventoryCommand.class)))
-                .willReturn(deductInventoryResult);
-
-        // When
-        DeductInventoryResult result = sut.handlePaymentCompleted(event);
-
-        // Then
-        assertThat(result).isEqualTo(deductInventoryResult);
-        then(inventoryApplicationService).should().deductInventory(new DeductInventoryCommand(
-                SKU,
-                DEDUCT_QUANTITY,
+    private DeductInventoryCommand expectedDeductInventoryCommand(PaymentCompletedEvent receivedPaymentCompletedEvent) {
+        return new DeductInventoryCommand(
+                receivedPaymentCompletedEvent.sku(),
+                receivedPaymentCompletedEvent.quantity(),
                 false
-        ));
-        then(inventoryEventPublisher).should().publishInventoryDeducted(new InventoryDeductedEvent(
-                ORDER_ID,
-                SKU,
-                DEDUCT_QUANTITY,
+        );
+    }
+
+    private DeductInventoryResult expectedDeductedInventory() {
+        return new DeductInventoryResult(SKU, DEDUCT_QUANTITY, REMAINING_QUANTITY);
+    }
+
+    private InventoryDeductedEvent expectedInventoryDeductedEvent(PaymentCompletedEvent receivedPaymentCompletedEvent) {
+        return new InventoryDeductedEvent(
+                receivedPaymentCompletedEvent.orderId(),
+                receivedPaymentCompletedEvent.sku(),
+                receivedPaymentCompletedEvent.quantity(),
                 REMAINING_QUANTITY
-        ));
+        );
     }
 }

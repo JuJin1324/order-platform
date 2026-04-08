@@ -1,7 +1,6 @@
 package com.ordersaga.payment.application;
 
 import com.ordersaga.payment.domain.PaymentStatus;
-import com.ordersaga.payment.fixture.PaymentFixtureValues;
 import com.ordersaga.payment.infrastructure.kafka.PaymentEventPublisher;
 import com.ordersaga.saga.event.OrderCreatedEvent;
 import com.ordersaga.saga.event.PaymentCompletedEvent;
@@ -31,40 +30,57 @@ class PaymentEventProcessorTest {
     @Mock
     private PaymentEventPublisher paymentEventPublisher;
 
-    private PaymentEventProcessor sut;
+    private PaymentEventProcessor paymentEventProcessor;
 
     @BeforeEach
     void setUp() {
-        sut = new PaymentEventProcessor(paymentApplicationService, paymentEventPublisher);
+        paymentEventProcessor = new PaymentEventProcessor(paymentApplicationService, paymentEventPublisher);
     }
 
     @Test
     @DisplayName("order-created 이벤트를 결제로 저장하고 payment-completed 이벤트를 발행한다")
     void handleOrderCreated_processesPaymentAndPublishesNextEvent() {
         // Given
-        OrderCreatedEvent event = new OrderCreatedEvent(ORDER_ID, SKU, QUANTITY, AMOUNT);
-        PaymentResult paymentResult = new PaymentResult(PAYMENT_ID, ORDER_ID, PaymentStatus.COMPLETED, AMOUNT);
+        OrderCreatedEvent receivedEvent = receivedOrderCreatedEvent();
+        PaymentResult completedPayment = expectedCompletedPayment();
 
-        given(paymentApplicationService.processPayment(any(ChargePaymentCommand.class))).willReturn(paymentResult);
+        given(paymentApplicationService.processPayment(any(ChargePaymentCommand.class)))
+                .willReturn(completedPayment);
 
         // When
-        PaymentResult result = sut.handleOrderCreated(event);
+        PaymentResult result = paymentEventProcessor.handleOrderCreated(receivedEvent);
 
         // Then
-        assertThat(result).isEqualTo(paymentResult);
-        then(paymentApplicationService).should().processPayment(new ChargePaymentCommand(
-                ORDER_ID,
-                AMOUNT,
-                SKU,
-                QUANTITY,
+        assertThat(result).isEqualTo(completedPayment);
+        then(paymentApplicationService).should().processPayment(expectedChargePaymentCommand(receivedEvent));
+        then(paymentEventPublisher).should().publishPaymentCompleted(expectedPaymentCompletedEvent(receivedEvent));
+    }
+
+    private OrderCreatedEvent receivedOrderCreatedEvent() {
+        return new OrderCreatedEvent(ORDER_ID, SKU, QUANTITY, AMOUNT);
+    }
+
+    private ChargePaymentCommand expectedChargePaymentCommand(OrderCreatedEvent receivedOrderCreatedEvent) {
+        return new ChargePaymentCommand(
+                receivedOrderCreatedEvent.orderId(),
+                receivedOrderCreatedEvent.amount(),
+                receivedOrderCreatedEvent.sku(),
+                receivedOrderCreatedEvent.quantity(),
                 false
-        ));
-        then(paymentEventPublisher).should().publishPaymentCompleted(new PaymentCompletedEvent(
-                ORDER_ID,
+        );
+    }
+
+    private PaymentResult expectedCompletedPayment() {
+        return new PaymentResult(PAYMENT_ID, ORDER_ID, PaymentStatus.COMPLETED, AMOUNT);
+    }
+
+    private PaymentCompletedEvent expectedPaymentCompletedEvent(OrderCreatedEvent receivedOrderCreatedEvent) {
+        return new PaymentCompletedEvent(
+                receivedOrderCreatedEvent.orderId(),
                 PAYMENT_ID,
-                AMOUNT,
-                SKU,
-                QUANTITY
-        ));
+                receivedOrderCreatedEvent.amount(),
+                receivedOrderCreatedEvent.sku(),
+                receivedOrderCreatedEvent.quantity()
+        );
     }
 }

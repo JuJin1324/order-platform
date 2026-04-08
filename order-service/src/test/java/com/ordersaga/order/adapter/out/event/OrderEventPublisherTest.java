@@ -1,5 +1,6 @@
 package com.ordersaga.order.adapter.out.event;
 
+import com.ordersaga.order.fixture.OrderResultFixture;
 import com.ordersaga.saga.SagaTopics;
 import com.ordersaga.saga.event.OrderCreatedEvent;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,10 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaOperations;
 
-import static com.ordersaga.order.fixture.OrderFixtureValues.AMOUNT;
-import static com.ordersaga.order.fixture.OrderFixtureValues.ORDER_ID;
-import static com.ordersaga.order.fixture.OrderFixtureValues.QUANTITY;
-import static com.ordersaga.order.fixture.OrderFixtureValues.SKU;
+import static com.ordersaga.order.fixture.OrderFixtureValues.*;
 import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,17 +31,21 @@ class OrderEventPublisherTest {
     @DisplayName("order-created 이벤트를 지정한 토픽으로 발행한다")
     void publishOrderCreated_sendsEventToTopic() {
         // Given
-        OrderCreatedEvent event = new OrderCreatedEvent(
-                ORDER_ID,
-                SKU,
-                QUANTITY,
-                AMOUNT
-        );
+        var orderResult = OrderResultFixture.created();
 
         // When
-        sut.publishOrderCreated(event);
+        sut.publishOrderCreated(orderResult);
 
         // Then
-        then(kafkaOperations).should().send(SagaTopics.ORDER_CREATED, event.orderId(), event);
+        then(kafkaOperations).should().send(
+                SagaTopics.ORDER_CREATED,
+                ORDER_ID,
+                new OrderCreatedEvent(
+                        ORDER_ID,
+                        SKU,
+                        QUANTITY,
+                        AMOUNT
+                )
+        );
     }
 }
