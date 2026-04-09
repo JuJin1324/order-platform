@@ -2,6 +2,13 @@ dependencies {
     testImplementation project(':order-service')
     testImplementation project(':payment-service')
     testImplementation project(':inventory-service')
+    testImplementation 'org.apache.kafka:kafka-clients'
+    testImplementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation platform('org.testcontainers:testcontainers-bom:1.20.6')
+    testImplementation 'org.testcontainers:kafka'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.awaitility:awaitility'
 }
 
 tasks.named('bootJar') {
