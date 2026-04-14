@@ -45,8 +45,7 @@ public class OrderController {
         CreateOrderCommand command = new CreateOrderCommand(
                 request.sku(),
                 request.quantity(),
-                request.amount(),
-                request.forceInventoryFailure()
+                request.amount()
         );
         return orderProcessor.processOrder(command);
     }

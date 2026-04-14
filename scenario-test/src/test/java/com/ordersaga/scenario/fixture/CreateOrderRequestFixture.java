@@ -8,17 +8,7 @@ public class CreateOrderRequestFixture {
         return new CreateOrderRequest(
                 ScenarioFixtureValues.SKU,
                 ScenarioFixtureValues.QUANTITY,
-                ScenarioFixtureValues.AMOUNT,
-                false
-        );
-    }
-
-    public static CreateOrderRequest withInventoryFailure() {
-        return new CreateOrderRequest(
-                ScenarioFixtureValues.SKU,
-                ScenarioFixtureValues.QUANTITY,
-                ScenarioFixtureValues.AMOUNT,
-                true
+                ScenarioFixtureValues.AMOUNT
         );
     }
 }

@@ -6,7 +6,6 @@ public record ChargePaymentCommand(
         String orderId,
         BigDecimal amount,
         String sku,
-        Integer quantity,
-        boolean forceInventoryFailure
+        Integer quantity
 ) {
 }

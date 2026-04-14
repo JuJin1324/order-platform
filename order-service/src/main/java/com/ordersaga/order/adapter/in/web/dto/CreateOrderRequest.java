@@ -17,8 +17,6 @@ public record CreateOrderRequest(
 
         @NotNull(message = "amount is required")
         @DecimalMin(value = "0.01", message = "amount must be at least 0.01")
-        BigDecimal amount,
-
-        boolean forceInventoryFailure
+        BigDecimal amount
 ) {
 }

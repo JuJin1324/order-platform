@@ -3,11 +3,9 @@ package com.ordersaga.payment.application;
 import com.ordersaga.payment.infrastructure.kafka.PaymentEventPublisher;
 import com.ordersaga.saga.event.OrderCreatedEvent;
 import com.ordersaga.saga.event.PaymentCompletedEvent;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnBean(PaymentEventPublisher.class)
 public class PaymentEventProcessor {
     private final PaymentApplicationService paymentApplicationService;
     private final PaymentEventPublisher paymentEventPublisher;
@@ -25,8 +23,7 @@ public class PaymentEventProcessor {
                 event.orderId(),
                 event.amount(),
                 event.sku(),
-                event.quantity(),
-                false
+                event.quantity()
         );
         PaymentResult paymentResult = paymentApplicationService.processPayment(command);
 

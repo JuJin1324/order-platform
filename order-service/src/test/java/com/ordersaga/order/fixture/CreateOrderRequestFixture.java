@@ -7,14 +7,10 @@ import static com.ordersaga.order.fixture.OrderFixtureValues.*;
 public class CreateOrderRequestFixture {
 
     public static CreateOrderRequest normal() {
-        return new CreateOrderRequest(SKU, QUANTITY, AMOUNT, false);
-    }
-
-    public static CreateOrderRequest withForceInventoryFailure() {
-        return new CreateOrderRequest(SKU, QUANTITY, AMOUNT, true);
+        return new CreateOrderRequest(SKU, QUANTITY, AMOUNT);
     }
 
     public static CreateOrderRequest missingSku() {
-        return new CreateOrderRequest(null, QUANTITY, AMOUNT, false);
+        return new CreateOrderRequest(null, QUANTITY, AMOUNT);
     }
 }

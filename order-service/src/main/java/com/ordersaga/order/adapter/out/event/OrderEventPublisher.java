@@ -6,12 +6,10 @@ import com.ordersaga.saga.SagaTopics;
 import com.ordersaga.saga.event.OrderCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaOperations;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(name = "app.saga.mode", havingValue = "kafka")
 public class OrderEventPublisher implements PublishOrderCreatedPort {
     private static final Logger log = LoggerFactory.getLogger(OrderEventPublisher.class);
 

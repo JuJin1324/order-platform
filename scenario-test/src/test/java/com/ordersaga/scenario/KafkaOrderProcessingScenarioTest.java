@@ -69,22 +69,12 @@ class KafkaOrderProcessingScenarioTest {
 
             inventoryContext = new SpringApplicationBuilder(InventoryServiceApplication.class)
                     .run(serviceArgs("inventory-kafka-scenario-db", bootstrapServers));
-            int inventoryPort = localPort(inventoryContext);
 
             paymentContext = new SpringApplicationBuilder(PaymentServiceApplication.class)
-                    .run(serviceArgs(
-                            "payment-kafka-scenario-db",
-                            bootstrapServers,
-                            "--inventory-service.url=http://localhost:" + inventoryPort
-                    ));
-            int paymentPort = localPort(paymentContext);
+                    .run(serviceArgs("payment-kafka-scenario-db", bootstrapServers));
 
             orderContext = new SpringApplicationBuilder(OrderServiceApplication.class)
-                    .run(serviceArgs(
-                            "order-kafka-scenario-db",
-                            bootstrapServers,
-                            "--payment-service.url=http://localhost:" + paymentPort
-                    ));
+                    .run(serviceArgs("order-kafka-scenario-db", bootstrapServers));
             int orderPort = localPort(orderContext);
 
             inventoryRepository = inventoryContext.getBean(InventoryRepository.class);
@@ -181,18 +171,13 @@ class KafkaOrderProcessingScenarioTest {
         };
     }
 
-    private String[] serviceArgs(String databaseName, String bootstrapServers, String... extraArgs) {
+    private String[] serviceArgs(String databaseName, String bootstrapServers) {
         String[] commonArgs = commonArgs(databaseName);
-        String[] kafkaArgs = new String[]{
-                "--spring.kafka.bootstrap-servers=" + bootstrapServers,
-                "--app.saga.mode=kafka",
-                "--app.kafka.listeners.enabled=true"
-        };
+        String[] extraArgs = new String[]{"--spring.kafka.bootstrap-servers=" + bootstrapServers};
 
-        String[] mergedArgs = new String[commonArgs.length + kafkaArgs.length + extraArgs.length];
+        String[] mergedArgs = new String[commonArgs.length + extraArgs.length];
         System.arraycopy(commonArgs, 0, mergedArgs, 0, commonArgs.length);
-        System.arraycopy(kafkaArgs, 0, mergedArgs, commonArgs.length, kafkaArgs.length);
-        System.arraycopy(extraArgs, 0, mergedArgs, commonArgs.length + kafkaArgs.length, extraArgs.length);
+        System.arraycopy(extraArgs, 0, mergedArgs, commonArgs.length, extraArgs.length);
         return mergedArgs;
     }
 

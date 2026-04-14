@@ -64,8 +64,7 @@ class InventoryEventProcessorTest {
     private DeductInventoryCommand expectedDeductInventoryCommand(PaymentCompletedEvent receivedPaymentCompletedEvent) {
         return new DeductInventoryCommand(
                 receivedPaymentCompletedEvent.sku(),
-                receivedPaymentCompletedEvent.quantity(),
-                false
+                receivedPaymentCompletedEvent.quantity()
         );
     }
 

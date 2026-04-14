@@ -16,15 +16,6 @@ spring:
 server:
   port: 8082
 
-inventory-service:
-  url: http://localhost:8083
-
-app:
-  saga:
-    mode: rest
-  kafka:
-    listeners:
-      enabled: false
 
 logging:
   level:

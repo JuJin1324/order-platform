@@ -25,10 +25,6 @@ public class InventoryApplicationService {
         Inventory inventory = inventoryRepository.findBySku(command.sku())
                 .orElseThrow(() -> new IllegalArgumentException("inventory not found: " + command.sku()));
 
-        if (command.forceFailure()) {
-            throw new IllegalStateException("forced inventory failure for sku: " + command.sku());
-        }
-
         inventory.deduct(command.quantity());
 
         return DeductInventoryResult.from(inventory, command.quantity());

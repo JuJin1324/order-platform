@@ -28,13 +28,4 @@ public class OrderResultFixture {
         );
     }
 
-    public static OrderResult failed() {
-        return new OrderResult(
-                OrderFixtureValues.ORDER_ID,
-                OrderStatus.FAILED,
-                OrderFixtureValues.SKU,
-                OrderFixtureValues.QUANTITY,
-                OrderFixtureValues.AMOUNT
-        );
-    }
 }

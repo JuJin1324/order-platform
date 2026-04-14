@@ -65,8 +65,7 @@ class PaymentEventProcessorTest {
                 receivedOrderCreatedEvent.orderId(),
                 receivedOrderCreatedEvent.amount(),
                 receivedOrderCreatedEvent.sku(),
-                receivedOrderCreatedEvent.quantity(),
-                false
+                receivedOrderCreatedEvent.quantity()
         );
     }
 

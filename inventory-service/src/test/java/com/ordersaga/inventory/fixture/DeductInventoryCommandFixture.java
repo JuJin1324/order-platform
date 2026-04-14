@@ -8,10 +8,6 @@ import static com.ordersaga.inventory.fixture.InventoryFixtureValues.SKU;
 public class DeductInventoryCommandFixture {
 
     public static DeductInventoryCommand normal() {
-        return new DeductInventoryCommand(SKU, DEDUCT_QUANTITY, false);
-    }
-
-    public static DeductInventoryCommand withForceFailure() {
-        return new DeductInventoryCommand(SKU, DEDUCT_QUANTITY, true);
+        return new DeductInventoryCommand(SKU, DEDUCT_QUANTITY);
     }
 }

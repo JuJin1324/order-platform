@@ -7,10 +7,6 @@ import static com.ordersaga.order.fixture.OrderFixtureValues.*;
 public class CreateOrderCommandFixture {
 
     public static CreateOrderCommand normal() {
-        return new CreateOrderCommand(SKU, QUANTITY, AMOUNT, false);
-    }
-
-    public static CreateOrderCommand withForceInventoryFailure() {
-        return new CreateOrderCommand(SKU, QUANTITY, AMOUNT, true);
+        return new CreateOrderCommand(SKU, QUANTITY, AMOUNT);
     }
 }
