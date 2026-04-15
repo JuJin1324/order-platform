@@ -11,4 +11,12 @@ public class CreateOrderRequestFixture {
                 ScenarioFixtureValues.AMOUNT
         );
     }
+
+    public static CreateOrderRequest overLimitAmount() {
+        return new CreateOrderRequest(
+                ScenarioFixtureValues.SKU,
+                ScenarioFixtureValues.QUANTITY,
+                ScenarioFixtureValues.OVER_LIMIT_AMOUNT
+        );
+    }
 }
