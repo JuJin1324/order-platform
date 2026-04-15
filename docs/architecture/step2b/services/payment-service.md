@@ -2,7 +2,7 @@
 
 ## 1. 역할 및 책임
 - `OrderCreatedEvent` 수신 시 결제 처리 (`COMPLETED`)
-- **(추가)** 결제 성공 시 `PaymentCompletedEvent` 발행
+- 결제 성공 시 `PaymentCompletedEvent` 발행
 - **(추가)** 결제 자체 실패 시 `PaymentFailedEvent` 발행
 - **(추가)** `InventoryDeductionFailed` 수신 시 결제 상태 취소 (`CANCELLED`) 및 보상 이벤트 발행
 

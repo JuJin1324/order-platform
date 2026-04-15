@@ -3,7 +3,7 @@
 ## 1. 역할 및 책임
 - 주문 생성 요청 접수 (`CREATED` 상태 저장)
 - `OrderCreatedEvent` 발행
-- **(추가)** `InventoryDeductedEvent` 수신 시 주문 확정 (`CONFIRMED`)
+- `InventoryDeductedEvent` 수신 시 주문 확정 (`CONFIRMED`)
 - **(추가)** `PaymentCancelled` 또는 `PaymentFailed` 수신 시 주문 취소 (`CANCELLED`)
 
 ## 2. 데이터 모델 (Order)

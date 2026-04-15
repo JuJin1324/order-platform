@@ -2,7 +2,7 @@
 
 ## 1. 역할 및 책임
 - `PaymentCompletedEvent` 수신 시 재고 차감 처리
-- **(추가)** 차감 성공 시 `InventoryDeductedEvent` 발행
+- 차감 성공 시 `InventoryDeductedEvent` 발행
 - **(추가)** 재고 부족 등 실패 시 `InventoryDeductionFailedEvent` 발행 (보상 트리거)
 
 ## 2. 데이터 모델 (Product/Stock)
