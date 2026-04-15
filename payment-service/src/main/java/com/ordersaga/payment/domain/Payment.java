@@ -16,6 +16,8 @@ import jakarta.persistence.Table;
 @Table(name = "payments")
 public class Payment {
 
+    public static final BigDecimal MAX_PAYMENT_AMOUNT = BigDecimal.valueOf(1_000_000);
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,6 +46,11 @@ public class Payment {
     }
 
     public static Payment complete(String orderId, BigDecimal amount) {
+        if (amount.compareTo(MAX_PAYMENT_AMOUNT) > 0) {
+            throw new IllegalStateException(
+                    "payment amount exceeds limit: " + amount + " > " + MAX_PAYMENT_AMOUNT
+            );
+        }
         return new Payment(orderId, amount);
     }
 

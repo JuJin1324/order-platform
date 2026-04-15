@@ -83,9 +83,7 @@ class PaymentEventProcessorTest {
     @DisplayName("inventory-deduction-failed 수신 시 결제를 취소하고 payment-cancelled 이벤트를 발행한다")
     void handleInventoryDeductionFailed_cancelPaymentAndPublishesCancelledEvent() {
         // Given
-        InventoryDeductionFailedEvent receivedEvent = new InventoryDeductionFailedEvent(
-                ORDER_ID, SKU, "not enough inventory for sku: " + SKU
-        );
+        InventoryDeductionFailedEvent receivedEvent = receivedInventoryDeductionFailedEvent();
         PaymentResult cancelledPayment = new PaymentResult(PAYMENT_ID, ORDER_ID, PaymentStatus.CANCELED, AMOUNT);
 
         given(paymentApplicationService.cancelPayment(ORDER_ID))
@@ -99,6 +97,10 @@ class PaymentEventProcessorTest {
         then(paymentEventPublisher).should().publishPaymentCancelled(
                 new PaymentCancelledEvent(ORDER_ID, PAYMENT_ID)
         );
+    }
+
+    private InventoryDeductionFailedEvent receivedInventoryDeductionFailedEvent() {
+        return new InventoryDeductionFailedEvent(ORDER_ID, SKU, "not enough inventory for sku: " + SKU);
     }
 
     private OrderCreatedEvent receivedOrderCreatedEvent() {
