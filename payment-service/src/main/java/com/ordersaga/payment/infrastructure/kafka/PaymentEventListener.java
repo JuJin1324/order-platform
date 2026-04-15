@@ -2,6 +2,7 @@ package com.ordersaga.payment.infrastructure.kafka;
 
 import com.ordersaga.payment.application.PaymentEventProcessor;
 import com.ordersaga.saga.SagaTopics;
+import com.ordersaga.saga.event.InventoryDeductionFailedEvent;
 import com.ordersaga.saga.event.OrderCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,5 +23,11 @@ public class PaymentEventListener {
     public void onOrderCreated(OrderCreatedEvent event) {
         log.info("Received order-created event skeleton for orderId={} sku={}", event.orderId(), event.sku());
         paymentEventProcessor.handleOrderCreated(event);
+    }
+
+    @KafkaListener(topics = SagaTopics.INVENTORY_DEDUCTION_FAILED, groupId = "${spring.application.name}")
+    public void onInventoryDeductionFailed(InventoryDeductionFailedEvent event) {
+        log.info("Received inventory-deduction-failed event for orderId={} sku={}", event.orderId(), event.sku());
+        paymentEventProcessor.handleInventoryDeductionFailed(event);
     }
 }

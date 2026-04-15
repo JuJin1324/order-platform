@@ -2,8 +2,11 @@ package com.ordersaga.payment.application;
 
 import com.ordersaga.payment.domain.PaymentStatus;
 import com.ordersaga.payment.infrastructure.kafka.PaymentEventPublisher;
+import com.ordersaga.saga.event.InventoryDeductionFailedEvent;
 import com.ordersaga.saga.event.OrderCreatedEvent;
+import com.ordersaga.saga.event.PaymentCancelledEvent;
 import com.ordersaga.saga.event.PaymentCompletedEvent;
+import com.ordersaga.saga.event.PaymentFailedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,10 +19,10 @@ import static com.ordersaga.payment.fixture.PaymentFixtureValues.ORDER_ID;
 import static com.ordersaga.payment.fixture.PaymentFixtureValues.PAYMENT_ID;
 import static com.ordersaga.payment.fixture.PaymentFixtureValues.QUANTITY;
 import static com.ordersaga.payment.fixture.PaymentFixtureValues.SKU;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentEventProcessorTest {
@@ -38,7 +41,7 @@ class PaymentEventProcessorTest {
     }
 
     @Test
-    @DisplayName("order-created 이벤트를 결제로 저장하고 payment-completed 이벤트를 발행한다")
+    @DisplayName("결제 성공 시 payment-completed 이벤트를 발행한다")
     void handleOrderCreated_processesPaymentAndPublishesNextEvent() {
         // Given
         OrderCreatedEvent receivedEvent = receivedOrderCreatedEvent();
@@ -48,12 +51,54 @@ class PaymentEventProcessorTest {
                 .willReturn(completedPayment);
 
         // When
-        PaymentResult result = paymentEventProcessor.handleOrderCreated(receivedEvent);
+        paymentEventProcessor.handleOrderCreated(receivedEvent);
 
         // Then
-        assertThat(result).isEqualTo(completedPayment);
         then(paymentApplicationService).should().processPayment(expectedChargePaymentCommand(receivedEvent));
         then(paymentEventPublisher).should().publishPaymentCompleted(expectedPaymentCompletedEvent(receivedEvent));
+        then(paymentEventPublisher).should(never()).publishPaymentFailed(any());
+    }
+
+    @Test
+    @DisplayName("결제 실패 시 payment-failed 이벤트를 발행한다")
+    void handleOrderCreated_whenPaymentFails_publishesPaymentFailedEvent() {
+        // Given
+        OrderCreatedEvent receivedEvent = receivedOrderCreatedEvent();
+        String failureReason = "payment processing failed";
+
+        given(paymentApplicationService.processPayment(any(ChargePaymentCommand.class)))
+                .willThrow(new IllegalStateException(failureReason));
+
+        // When
+        paymentEventProcessor.handleOrderCreated(receivedEvent);
+
+        // Then
+        then(paymentEventPublisher).should().publishPaymentFailed(
+                new PaymentFailedEvent(ORDER_ID, failureReason)
+        );
+        then(paymentEventPublisher).should(never()).publishPaymentCompleted(any());
+    }
+
+    @Test
+    @DisplayName("inventory-deduction-failed 수신 시 결제를 취소하고 payment-cancelled 이벤트를 발행한다")
+    void handleInventoryDeductionFailed_cancelPaymentAndPublishesCancelledEvent() {
+        // Given
+        InventoryDeductionFailedEvent receivedEvent = new InventoryDeductionFailedEvent(
+                ORDER_ID, SKU, "not enough inventory for sku: " + SKU
+        );
+        PaymentResult cancelledPayment = new PaymentResult(PAYMENT_ID, ORDER_ID, PaymentStatus.CANCELED, AMOUNT);
+
+        given(paymentApplicationService.cancelPayment(ORDER_ID))
+                .willReturn(cancelledPayment);
+
+        // When
+        paymentEventProcessor.handleInventoryDeductionFailed(receivedEvent);
+
+        // Then
+        then(paymentApplicationService).should().cancelPayment(ORDER_ID);
+        then(paymentEventPublisher).should().publishPaymentCancelled(
+                new PaymentCancelledEvent(ORDER_ID, PAYMENT_ID)
+        );
     }
 
     private OrderCreatedEvent receivedOrderCreatedEvent() {
