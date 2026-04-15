@@ -55,6 +55,10 @@ public class Order {
         this.status = OrderStatus.CONFIRMED;
     }
 
+    public void cancel() {
+        this.status = OrderStatus.CANCELLED;
+    }
+
     public void fail() {
         this.status = OrderStatus.FAILED;
     }

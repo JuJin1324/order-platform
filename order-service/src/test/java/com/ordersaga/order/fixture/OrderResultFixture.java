@@ -28,4 +28,14 @@ public class OrderResultFixture {
         );
     }
 
+    public static OrderResult cancelled() {
+        return new OrderResult(
+                OrderFixtureValues.ORDER_ID,
+                OrderStatus.CANCELLED,
+                OrderFixtureValues.SKU,
+                OrderFixtureValues.QUANTITY,
+                OrderFixtureValues.AMOUNT
+        );
+    }
+
 }

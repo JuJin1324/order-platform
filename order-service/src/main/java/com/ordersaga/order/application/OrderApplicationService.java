@@ -25,6 +25,13 @@ public class OrderApplicationService {
         return OrderResult.from(order);
     }
 
+    public OrderResult cancelOrder(String orderId) {
+        Order order = findOrder(orderId);
+        order.cancel();
+        orderRepository.save(order);
+        return OrderResult.from(order);
+    }
+
     public OrderResult failOrder(String orderId) {
         Order order = findOrder(orderId);
         order.fail();

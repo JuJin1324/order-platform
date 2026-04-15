@@ -1,6 +1,8 @@
 package com.ordersaga.order.application;
 
 import com.ordersaga.saga.event.InventoryDeductedEvent;
+import com.ordersaga.saga.event.PaymentCancelledEvent;
+import com.ordersaga.saga.event.PaymentFailedEvent;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,7 +13,15 @@ public class OrderEventProcessor {
         this.orderApplicationService = orderApplicationService;
     }
 
-    public OrderResult handleInventoryDeducted(InventoryDeductedEvent event) {
-        return orderApplicationService.confirmOrder(event.orderId());
+    public void handleInventoryDeducted(InventoryDeductedEvent event) {
+        orderApplicationService.confirmOrder(event.orderId());
+    }
+
+    public void handlePaymentFailed(PaymentFailedEvent event) {
+        orderApplicationService.cancelOrder(event.orderId());
+    }
+
+    public void handlePaymentCancelled(PaymentCancelledEvent event) {
+        orderApplicationService.cancelOrder(event.orderId());
     }
 }
