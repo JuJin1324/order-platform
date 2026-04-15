@@ -1,4 +1,5 @@
 dependencies {
+    testImplementation project(':saga-events')
     testImplementation project(':order-service')
     testImplementation project(':payment-service')
     testImplementation project(':inventory-service')

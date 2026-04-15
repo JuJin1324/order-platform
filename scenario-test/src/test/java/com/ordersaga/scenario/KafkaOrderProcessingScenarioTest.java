@@ -13,6 +13,7 @@ import com.ordersaga.payment.PaymentServiceApplication;
 import com.ordersaga.payment.domain.Payment;
 import com.ordersaga.payment.domain.PaymentRepository;
 import com.ordersaga.payment.domain.PaymentStatus;
+import com.ordersaga.saga.SagaTopics;
 import com.ordersaga.scenario.fixture.CreateOrderRequestFixture;
 import com.ordersaga.scenario.fixture.ScenarioFixtureValues;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -43,9 +44,6 @@ import static org.awaitility.Awaitility.await;
 class KafkaOrderProcessingScenarioTest {
     private static final DockerImageName KAFKA_IMAGE = DockerImageName.parse("apache/kafka-native:3.8.0");
     private static final Duration SAGA_COMPLETION_TIMEOUT = Duration.ofSeconds(15);
-    private static final String ORDER_CREATED_TOPIC = "order-created";
-    private static final String PAYMENT_COMPLETED_TOPIC = "payment-completed";
-    private static final String INVENTORY_DEDUCTED_TOPIC = "inventory-deducted";
 
     private KafkaContainer kafkaContainer;
 
@@ -187,9 +185,9 @@ class KafkaOrderProcessingScenarioTest {
                 bootstrapServers
         ))) {
             adminClient.createTopics(List.of(
-                    new NewTopic(ORDER_CREATED_TOPIC, 1, (short) 1),
-                    new NewTopic(PAYMENT_COMPLETED_TOPIC, 1, (short) 1),
-                    new NewTopic(INVENTORY_DEDUCTED_TOPIC, 1, (short) 1)
+                    new NewTopic(SagaTopics.ORDER_CREATED, 1, (short) 1),
+                    new NewTopic(SagaTopics.PAYMENT_COMPLETED, 1, (short) 1),
+                    new NewTopic(SagaTopics.INVENTORY_DEDUCTED, 1, (short) 1)
             )).all().get();
         } catch (Exception exception) {
             throw new IllegalStateException("Failed to create Kafka topics for scenario test", exception);
