@@ -97,7 +97,7 @@ sequenceDiagram
     Note over O: Order=CANCELLED
 ```
 
-각 서비스는 자신이 수신한 이벤트에만 반응한다. inventory-service는 payment-service를 직접 호출하지 않고, payment-service는 order-service를 직접 호출하지 않는다.
+각 서비스는 자신이 수신한 이벤트에만 반응한다. inventory-service는 payment-service를 직접 호출하지 않고, payment-service는 order-service를 직접 호출하지 않는다. (다이어그램의 화살표는 직접 호출이 아닌 Kafka 토픽을 통한 이벤트 발행을 나타낸다.)
 
 보상 체인이 inventory → payment → order 방향으로 역행하는 것이 다이어그램에서 보인다. Step 2b의 구현 순서도 이 방향을 따랐다. 실패가 시작되는 재고 서비스부터 결제 서비스, 주문 서비스 순서로 쌓아서, 어느 시점에서도 "여기까지 구현한 것이 단독으로 동작하는지 확인했다"는 기준점을 잡을 수 있도록 했다.
 
