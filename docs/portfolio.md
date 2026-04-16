@@ -4,8 +4,11 @@
 
 세 개의 독립 Spring Boot 서비스(주문·결제·재고)가 각자의 DB를 가지고 Kafka 이벤트로 통신하는 구조다. 서비스들은 서로를 직접 호출하지 않는다. 주문이 생성되면 이벤트가 발행되고, 다음 서비스가 그 이벤트를 수신해 처리한 뒤 또 다음 이벤트를 발행한다.
 
-```
-order-service → (order-created) → payment-service → (payment-completed) → inventory-service → (inventory-deducted) → order-service
+```mermaid
+graph LR
+    O([order-service]) -->|order-created| P([payment-service])
+    P -->|payment-completed| I([inventory-service])
+    I -->|inventory-deducted| O
 ```
 
 이 구조에서 중간 단계가 실패하면 이미 커밋된 앞 단계를 되돌릴 수단이 필요하다. 이것이 Saga 패턴이 해결하는 문제다.
