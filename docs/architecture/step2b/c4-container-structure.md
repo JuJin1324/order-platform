@@ -18,7 +18,7 @@
 graph TB
     Client["Client"]
 
-    subgraph System["order-saga-mvp"]
+    subgraph System["order-platform"]
         Order["order-service\n:8081"]
         Payment["payment-service\n:8082"]
         Inventory["inventory-service\n:8083"]

@@ -1,4 +1,4 @@
-# order-saga-mvp
+# order-platform
 
 분산 서비스 환경에서 독립된 트랜잭션 경계를 가진 서비스들 간의 데이터 정합성 문제를
 Choreography Saga 패턴과 보상 트랜잭션으로 해결하는 MVP.
@@ -70,7 +70,7 @@ sequenceDiagram
 ## 모듈 구조
 
 ```
-order-saga-mvp/
+order-platform/
 ├── saga-events/          # 서비스 간 공유 이벤트 타입 및 토픽 상수
 ├── order-service/        # 주문 생성, Saga 시작점 및 최종 수렴자 (포트 8081)
 ├── payment-service/      # 결제 처리 및 재고 실패 시 환불 (포트 8082)

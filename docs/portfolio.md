@@ -1,4 +1,4 @@
-# Order Saga MVP — 포트폴리오
+# Order Platform — Choreography Saga 구현 포트폴리오
 
 ## 프로젝트 개요
 

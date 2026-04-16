@@ -1,4 +1,4 @@
-rootProject.name = 'order-saga-mvp'
+rootProject.name = 'order-platform'
 
 include 'order-service'
 include 'payment-service'

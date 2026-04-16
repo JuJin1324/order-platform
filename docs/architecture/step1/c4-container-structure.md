@@ -15,7 +15,7 @@
 graph LR
     Client["Client"]
 
-    subgraph System["order-saga-mvp"]
+    subgraph System["order-platform"]
         Order["order-service\nSpring Boot\n:8081"]
         Payment["payment-service\nSpring Boot\n:8082"]
         Inventory["inventory-service\nSpring Boot\n:8083"]
