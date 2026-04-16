@@ -82,21 +82,6 @@ class OrderApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("주문 실패 처리 시 FAILED 상태로 전이하고 저장한다")
-    void failOrder_transitionsToFailedAndSaves() {
-        // Given
-        Order order = Order.create(OrderFixtureValues.SKU, OrderFixtureValues.QUANTITY, OrderFixtureValues.AMOUNT);
-        given(orderRepository.findByOrderId(OrderFixtureValues.ORDER_ID)).willReturn(Optional.of(order));
-
-        // When
-        OrderResult result = orderApplicationService.failOrder(OrderFixtureValues.ORDER_ID);
-
-        // Then
-        assertThat(result.status()).isEqualTo(OrderStatus.FAILED);
-        then(orderRepository).should().save(order);
-    }
-
-    @Test
     @DisplayName("존재하지 않는 orderId로 조회하면 예외가 발생한다")
     void findOrder_whenNotFound_throwsIllegalArgumentException() {
         // Given

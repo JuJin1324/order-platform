@@ -32,13 +32,6 @@ public class OrderApplicationService {
         return OrderResult.from(order);
     }
 
-    public OrderResult failOrder(String orderId) {
-        Order order = findOrder(orderId);
-        order.fail();
-        orderRepository.save(order);
-        return OrderResult.from(order);
-    }
-
     public OrderResult getOrder(String orderId) {
         Order order = findOrder(orderId);
         return OrderResult.from(order);

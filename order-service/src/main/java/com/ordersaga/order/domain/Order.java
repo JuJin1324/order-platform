@@ -59,10 +59,6 @@ public class Order {
         this.status = OrderStatus.CANCELLED;
     }
 
-    public void fail() {
-        this.status = OrderStatus.FAILED;
-    }
-
     public Long getId() {
         return id;
     }
