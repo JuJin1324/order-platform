@@ -42,9 +42,41 @@ Step 2b 안에서도 보상 방향을 따라 PR을 분리했다. inventory-servi
 
 이 선택의 핵심은 **서비스 간 직접 의존 제거**다. Orchestrator를 두면 보상 흐름을 한 곳에서 파악할 수 있지만, 모든 서비스가 Orchestrator에 결합된다. Choreography에서 각 서비스는 이벤트 계약만 알면 된다. 트레이드오프로 전체 흐름을 한 곳에서 추적하기 어려워지지만, 이 프로젝트의 규모에서는 이벤트 스토밍 다이어그램이 그 역할을 대신할 수 있다고 판단했다.
 
-### 왜 레코드 삭제가 아닌 CANCELLED 상태 전이인가
+**순방향 흐름**
 
-보상 트랜잭션이 완료됐을 때 기존 레코드를 삭제하지 않고, `CANCELLED` 상태로 전이시키는 방식을 선택했다.
+```mermaid
+sequenceDiagram
+    participant O as order-service
+    participant P as payment-service
+    participant I as inventory-service
+
+    O->>P: order-created
+    P->>I: payment-completed
+    I->>O: inventory-deducted
+    Note over O: Order=CONFIRMED
+```
+
+**보상 흐름 — 재고 실패**
+
+```mermaid
+sequenceDiagram
+    participant O as order-service
+    participant P as payment-service
+    participant I as inventory-service
+
+    O->>P: order-created
+    P->>I: payment-completed
+    I->>P: inventory-deduction-failed
+    Note over P: Payment=CANCELLED
+    P->>O: payment-cancelled
+    Note over O: Order=CANCELLED
+```
+
+각 서비스는 자신이 수신한 이벤트에만 반응한다. inventory-service는 payment-service를 직접 호출하지 않고, payment-service는 order-service를 직접 호출하지 않는다.
+
+### 왜 DB 레코드 삭제가 아닌 CANCELLED 상태 전이인가
+
+보상 트랜잭션이 완료됐을 때 해당 DB 레코드를 삭제하지 않고, `CANCELLED` 상태로 전이시키는 방식을 선택했다.
 
 분산 환경에서 "무언가가 일어났다는 사실"은 지울 수 없다. 결제가 완료됐다가 취소된 것과, 처음부터 결제가 없었던 것은 다른 이력이다. 상태를 CANCELLED로 남기면 왜 주문이 취소됐는지 DB만으로 추적할 수 있고, 동일한 이벤트가 재처리될 때 이미 처리된 이력을 확인할 수 있다.
 
@@ -78,7 +110,32 @@ Payment=CANCELLED, Order=CANCELLED
 
 ### 전후 비교
 
-Step 1에서 재현한 불일치 시나리오 — 결제는 성공했지만 재고가 없는 상황 — 와 동일한 조건으로 Step 2b를 검증했다. Step 1에서는 `Order=FAILED, Payment=COMPLETED`로 불일치가 남았지만, Step 2b에서는 세 서비스가 모두 CANCELLED로 수렴한다.
+Step 1에서 재현한 불일치 시나리오 — 결제는 성공했지만 재고가 없는 상황 — 와 동일한 조건으로 Step 2b를 검증했다.
+
+```mermaid
+stateDiagram-v2
+    direction LR
+
+    state "Step 1 (REST 체이닝)" as S1 {
+        state "Order=FAILED" as O1
+        state "Payment=COMPLETED" as P1
+        state "Inventory 변화 없음" as I1
+        O1
+        P1
+        I1
+    }
+
+    state "Step 2b (Choreography Saga)" as S2 {
+        state "Order=CANCELLED" as O2
+        state "Payment=CANCELLED" as P2
+        state "Inventory 변화 없음" as I2
+        O2
+        P2
+        I2
+    }
+```
+
+Step 1에서는 결제만 COMPLETED로 남아 불일치가 영구적으로 남는다. Step 2b에서는 보상 체인이 역방향으로 완주해 세 서비스가 모두 CANCELLED로 수렴한다.
 
 ---
 
