@@ -2,111 +2,129 @@
 
 MSA 환경에서 "결제는 됐는데 재고가 안 빠지는" 문제를 Saga 패턴으로 해결하는 MVP.
 
-## 도메인 문제
+주문·결제·재고가 각각 독립 DB를 가질 때, 중간 단계 실패 시 발생하는 서비스 간 데이터 불일치를
+보상 트랜잭션으로 자동 복구해 결과적 일관성을 확보하는 과정을 단계별로 구현한다.
 
-주문·결제·재고가 각각 독립 DB를 가지면, 중간 단계 실패 시 서비스 간 데이터 불일치가 발생한다.
-보상 트랜잭션으로 실패한 단계를 자동 되돌려 결과적 일관성을 확보한다.
+---
 
-## 기술 스택
+## 단계별 진행 상태
 
-- Spring Boot 4.0.1 / Java 21
-- H2 기반 로컬 실행 및 시나리오 테스트 검증
-- REST 체이닝 기반 현재 구현
-- `scenario-test` 모듈을 통한 end-to-end 상태 검증
-- Kafka 기반 Choreography Saga는 다음 단계에서 추가 예정
+| 단계 | 내용 | 상태 |
+|---|---|---|
+| Step 1 | REST 체이닝으로 순방향 흐름 구현, 불일치 재현 | ✅ 완료 |
+| Step 2a | Kafka 비동기 이벤트 기반 순방향 흐름으로 전환 | ✅ 완료 |
+| Step 2b | 실패 시 역방향 보상 이벤트 체인 (Choreography Saga) | ✅ 완료 |
+| Step 3 | 메시징 신뢰성 — Outbox 패턴, 멱등성, DLT, Result 타입 | 예정 |
 
-## 현재 범위
+---
 
-- 현재 구현: REST 호출 체이닝으로 주문 → 결제 → 재고 차감
-- 현재 목표: 재고 차감이 실패해도 결제는 이미 완료된 상태로 남는 불일치 재현
-- 다음 단계: Kafka 기반 Choreography Saga + 보상 트랜잭션
-- 현재 단계에서는 Docker Compose를 채택하지 않음
+## 아키텍처
 
-## 프로젝트 구조
+### 순방향 흐름
 
-- `order-service/`: 주문 생성, 결제 서비스 호출, 최종 주문 상태 저장
-- `payment-service/`: 결제 레코드 저장 후 재고 서비스 호출
-- `inventory-service/`: 재고 차감과 실패 시뮬레이션
-- `scenario-test/`: 3개 서비스를 함께 띄워 정상 흐름과 불일치 재현을 검증하는 시나리오 테스트
-- `docs/architecture/problem-solving-structure.md`: 문제 발생/해결 흐름 구조
-- `docs/architecture/c4-container-structure.md`: 서비스와 DB 배치 구조
-
-## 실행 방법
-
-### 1. 로컬 빠른 검증(H2 기본값)
-
-Docker 없이도 현재 흐름을 바로 확인할 수 있도록, 각 서비스는 기본적으로 H2를 사용한다.
-
-```bash
-./gradlew bootJar
+```
+order-service → [order-created] → payment-service → [payment-completed] → inventory-service → [inventory-deducted] → order-service
 ```
 
-JDK 21 이상이 기본 Java로 잡혀 있으면 위 명령만으로 충분하다.
+주문 생성 → 결제 승인 → 재고 차감 → 주문 확정 순서로 이벤트가 전파된다.
 
-각 서비스 실행:
+### 보상 흐름 A — 결제 실패
 
-```bash
-java -jar inventory-service/build/libs/inventory-service.jar
-java -jar payment-service/build/libs/payment-service.jar
-java -jar order-service/build/libs/order-service.jar
+```
+payment-service → [payment-failed] → order-service (CANCELLED)
 ```
 
-### 2. 시나리오 테스트로 흐름 검증
+### 보상 흐름 B — 재고 실패
 
-세 서비스를 함께 띄워 정상 흐름과 불일치 재현을 검증하려면 아래 테스트를 실행한다.
+```
+inventory-service → [inventory-deduction-failed] → payment-service (CANCELLED) → [payment-cancelled] → order-service (CANCELLED)
+```
+
+자세한 흐름은 [Step 2b 문제 해결 구조](./docs/architecture/step2b/problem-solving-structure.md)를 참고한다.
+
+---
+
+## 모듈 구조
+
+```
+order-saga-mvp/
+├── saga-events/          # 서비스 간 공유 이벤트 타입 및 토픽 상수
+├── order-service/        # 주문 생성, Saga 시작점 및 최종 수렴자 (포트 8081)
+├── payment-service/      # 결제 처리 및 재고 실패 시 환불 (포트 8082)
+├── inventory-service/    # 재고 차감 및 실패 이벤트 발행 (포트 8083)
+├── scenario-test/        # 세 서비스를 함께 구동하는 E2E 시나리오 테스트
+└── docs/                 # 단계별 아키텍처 문서 및 설계 계획
+```
+
+---
+
+## 빠른 시작
+
+### 전체 테스트
+
+```bash
+./gradlew test
+```
+
+### 시나리오 테스트만 (E2E)
+
+Testcontainers로 Kafka를 띄우고 세 서비스를 함께 구동해 전체 Saga 흐름을 검증한다.
 
 ```bash
 ./gradlew :scenario-test:test
 ```
 
-### 3. 정상 시나리오
+### 로컬 서비스 실행
+
+각 서비스는 기본적으로 H2를 사용한다. Docker 없이도 실행 가능하다.
 
 ```bash
-curl -s http://localhost:8081/api/orders \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "sku": "sku-001",
-    "quantity": 2,
-    "amount": 15000,
-    "forceInventoryFailure": false
-  }'
+./gradlew bootJar
+
+java -jar order-service/build/libs/order-service.jar
+java -jar payment-service/build/libs/payment-service.jar
+java -jar inventory-service/build/libs/inventory-service.jar
 ```
 
-정상 시나리오에서는:
-- Order 상태가 `CONFIRMED`
-- Payment 상태가 `COMPLETED`
-- Inventory 수량이 10 → 8
+---
 
-### 4. 불일치 재현 시나리오
+## 시나리오 설명
 
-```bash
-curl -s http://localhost:8081/api/orders \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "sku": "sku-001",
-    "quantity": 2,
-    "amount": 15000,
-    "forceInventoryFailure": true
-  }'
-```
+### 순방향 — 정상 흐름
 
-실패 시나리오에서는:
-- Order 상태가 `FAILED`
-- Payment 상태가 `COMPLETED`
-- Inventory 수량은 그대로 유지
+`KafkaOrderProcessingScenarioTest`에서 검증한다.
 
-즉, "주문은 실패로 처리됐지만 결제는 이미 끝난 상태"라는 분산 환경의 불일치가 그대로 남는다.
+- 주문 생성 → 결제 완료 → 재고 차감 → 주문 확정
+- 최종 상태: `Order=CONFIRMED`, `Payment=COMPLETED`, 재고 감소
 
-## 상태 확인
+### 보상 A — 결제 실패 (1단계 보상)
 
-현재 단계에서는 DB를 직접 조회하는 방식보다 시나리오 테스트로 상태를 검증한다.
+`KafkaCompensationScenarioTest#scenarioA_paymentFailure_cancelsOrder`에서 검증한다.
 
-- 정상 흐름 검증: `Order=CONFIRMED`, `Payment=COMPLETED`, `Inventory 감소`
-- 불일치 재현 검증: `Order=FAILED`, `Payment=COMPLETED`, `Inventory unchanged`
-- 검증 위치: `scenario-test/src/test/java/com/ordersaga/scenario/OrderProcessingScenarioTest.java`
+- 결제 금액이 한도(`1,000,000원`)를 초과하면 결제 서비스가 `PaymentFailedEvent`를 발행한다
+- 최종 상태: `Order=CANCELLED`
+
+### 보상 B — 재고 실패 (전체 보상 체인)
+
+`KafkaCompensationScenarioTest#scenarioB_inventoryFailure_cancelsPaymentAndOrder`에서 검증한다.
+
+- 재고가 0인 상태에서 주문하면 재고 서비스가 `InventoryDeductionFailedEvent`를 발행한다
+- 최종 상태: `Payment=CANCELLED`, `Order=CANCELLED`
+
+---
 
 ## 관련 문서
 
-- [실행 계획](./docs/order-payment-saga-mvp.md)
-- [문제 해결 흐름 다이어그램](./docs/architecture/problem-solving-structure.md)
-- [서비스/DB 배치 구조](./docs/architecture/c4-container-structure.md)
+### 아키텍처
+
+- [Step 2b 문제 해결 구조](./docs/architecture/step2b/problem-solving-structure.md) — 순방향/보상 흐름 다이어그램
+- [Step 2b 이벤트 스토밍](./docs/architecture/step2b/event-storming.md)
+- [Step 2b 컨테이너 구조](./docs/architecture/step2b/c4-container-structure.md)
+
+### 설계 계획
+
+- [Step 2b 보상 트랜잭션 PR 계획](./docs/plans/2026-04-15-step2b-compensation-pr-plan.md) — Step 3으로 미룬 항목 포함
+
+### 테스트
+
+- [테스트 전략](./docs/architecture/test-strategy.md) — 레이어별 테스트 매트릭스 및 기준
