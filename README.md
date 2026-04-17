@@ -63,7 +63,7 @@ sequenceDiagram
     Note over O: Order=CANCELLED
 ```
 
-자세한 흐름은 [Step 2b 문제 해결 구조](./docs/architecture/step2b/problem-solving-structure.md)를 참고한다.
+자세한 흐름은 [Step 2b 문제 해결 구조](docs/phase1/architecture/step2b/problem-solving-structure.md)를 참고한다.
 
 ---
 
@@ -128,14 +128,14 @@ Testcontainers로 Kafka를 띄우고 세 서비스를 함께 구동해 전체 Sa
 
 ### 아키텍처
 
-- [Step 2b 문제 해결 구조](./docs/architecture/step2b/problem-solving-structure.md) — 순방향/보상 흐름 다이어그램
-- [Step 2b 이벤트 스토밍](./docs/architecture/step2b/event-storming.md)
-- [Step 2b 컨테이너 구조](./docs/architecture/step2b/c4-container-structure.md)
+- [Step 2b 문제 해결 구조](docs/phase1/architecture/step2b/problem-solving-structure.md) — 순방향/보상 흐름 다이어그램
+- [Step 2b 이벤트 스토밍](docs/phase1/architecture/step2b/event-storming.md)
+- [Step 2b 컨테이너 구조](docs/phase1/architecture/step2b/c4-container-structure.md)
 
 ### 설계 계획
 
-- [Step 2b 보상 트랜잭션 PR 계획](./docs/plans/2026-04-15-step2b-compensation-pr-plan.md) — Step 3으로 미룬 항목 포함
+- [Step 2b 보상 트랜잭션 PR 계획](docs/phase1/architecture/step2b/step2b-pr-plan.md) — Step 3으로 미룬 항목 포함
 
 ### 테스트
 
-- [테스트 전략](./docs/architecture/test-strategy.md) — 레이어별 테스트 매트릭스 및 기준
+- [테스트 전략](docs/phase1/architecture/test-strategy.md) — 레이어별 테스트 매트릭스 및 기준
