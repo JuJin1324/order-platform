@@ -27,7 +27,6 @@ graph TB
     subgraph Kafka["Apache Kafka"]
         Forward["순방향 토픽"]
         Compensation["보상 토픽"]
-        DLT["DLT (격리 토픽)"]
     end
 
     OrderDb[("order_db")]
@@ -38,8 +37,6 @@ graph TB
 
     System <-->|이벤트 송수신| Forward
     System <-->|이벤트 송수신| Compensation
-    Forward -. retry 소진 .-> DLT
-    Compensation -. retry 소진 .-> DLT
 
     Order --- OrderDb
     Payment --- PaymentDb
