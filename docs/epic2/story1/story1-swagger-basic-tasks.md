@@ -1,4 +1,4 @@
-# Step 1 Swagger 기본 연동 PR 계획
+# Story 1 Swagger 기본 연동 Task 계획
 
 이 문서는 "order-service의 REST API를 Swagger UI로 어떻게 노출할 것인가"를 정리한다.
 
@@ -13,9 +13,9 @@
 
 ---
 
-## 2. 권장 PR 순서
+## 2. 권장 Task 순서
 
-### PR 1. springdoc-openapi 의존성 추가 + Swagger UI 노출
+### Task 1. springdoc-openapi 의존성 추가 + Swagger UI 노출
 
 #### 목표
 
@@ -29,11 +29,11 @@
   - `springdoc.swagger-ui.path=/swagger-ui.html`
 - 기존 Spring Security 또는 CSRF 설정이 있다면 Swagger UI 경로를 허용 목록에 추가
 
-#### 이 PR에서 하지 않을 것
+#### 이 Task에서 하지 않을 것
 
-- `@Operation`, `@ApiResponse`, `@Schema` 어노테이션 추가 (Step 2)
-- `@OpenAPIDefinition` 글로벌 Info 설정 (Step 2)
-- 엔드포인트 설명 보강 (Step 2)
+- `@Operation`, `@ApiResponse`, `@Schema` 어노테이션 추가 (Story 2)
+- `@OpenAPIDefinition` 글로벌 Info 설정 (Story 2)
+- 엔드포인트 설명 보강 (Story 2)
 
 #### 테스트 게이트
 
@@ -43,15 +43,15 @@
 #### 머지 조건
 
 `/swagger-ui/index.html` 접속 시 order-service의 엔드포인트 목록이 보여야 한다.  
-어노테이션이 없어 설명이 부족해도 무방하다. 이 PR은 "켜는 것"만 목표로 한다.
+어노테이션이 없어 설명이 부족해도 무방하다. 이 Task은 "켜는 것"만 목표로 한다.
 
 ---
 
 ## 3. 이 계획에서 의도적으로 뒤로 미룬 것
 
-- controller·DTO 어노테이션 — Step 2
-- React SPA와의 연동 — Step 3부터
-- `OrderStatusHistory` 엔드포인트 문서화 — Step 6에서 엔드포인트 추가 시
+- controller·DTO 어노테이션 — Story 2
+- React SPA와의 연동 — Story 3부터
+- `OrderStatusHistory` 엔드포인트 문서화 — Story 6에서 엔드포인트 추가 시
 - Swagger UI 커스터마이징(테마, 로고 등)
 - 운영 환경에서 Swagger UI 비활성화 설정
 
@@ -62,4 +62,4 @@
 1. 의존성 추가
 2. springdoc 기본 설정 추가
 3. 브라우저에서 Swagger UI 접속 확인
-4. Step 2로 넘어가기 전 "무엇이 부족한가" 직접 확인
+4. Story 2로 넘어가기 전 "무엇이 부족한가" 직접 확인
