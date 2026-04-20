@@ -22,6 +22,9 @@ Task 1·2는 "문서를 채우는 작업"이고, Task 3은 "문서와 코드의 
 - `@ApiResponse`는 실제 발생 가능한 status code만 선언한다. 가상의 오류 케이스는 나열하지 않는다.
 - `@OpenAPIDefinition`으로 API 전체 메타데이터(title, version)를 한 번만 설정한다.
 - `@Schema`는 요청/응답 DTO에만 추가한다. JPA 엔티티에는 붙이지 않는다.
+- 모든 controller는 `produces`/`consumes`를 명시한다. Swagger UI에서 `*/*` 대신 `application/json`이 표시되도록 하고, 의도하지 않은 미디어 타입 수락을 방지한다.
+  - 응답: `@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)` — 클래스 레벨에 선언해 전체 엔드포인트에 적용
+  - 요청 Body가 있는 엔드포인트: `@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)`
 
 ---
 
