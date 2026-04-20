@@ -1,6 +1,7 @@
 package com.ordersaga.order.application;
 
 import com.ordersaga.order.domain.Order;
+import com.ordersaga.order.domain.OrderNotFoundException;
 import com.ordersaga.order.domain.OrderRepository;
 import com.ordersaga.order.domain.OrderStatus;
 import com.ordersaga.order.fixture.OrderFixtureValues;
@@ -82,14 +83,14 @@ class OrderApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 orderId로 조회하면 예외가 발생한다")
-    void findOrder_whenNotFound_throwsIllegalArgumentException() {
+    @DisplayName("존재하지 않는 orderId로 조회하면 OrderNotFoundException이 발생한다")
+    void findOrder_whenNotFound_throwsOrderNotFoundException() {
         // Given
         given(orderRepository.findByOrderId(OrderFixtureValues.ORDER_ID)).willReturn(Optional.empty());
 
         // When & Then
         assertThatThrownBy(() -> orderApplicationService.confirmOrder(OrderFixtureValues.ORDER_ID))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("order not found");
+                .isInstanceOf(OrderNotFoundException.class)
+                .hasMessageContaining(OrderFixtureValues.ORDER_ID);
     }
 }

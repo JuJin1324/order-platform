@@ -18,6 +18,7 @@ import tools.jackson.databind.ObjectMapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,11 +65,24 @@ class CreateOrderIntegrationTest {
     }
 
     @Test
-    @DisplayName("필수 필드 누락 시 400 응답을 반환한다")
-    void missingRequiredField_returns400() throws Exception {
+    @DisplayName("필수 필드 누락 시 400 응답과 VALIDATION_FAILED 코드를 반환한다")
+    void missingRequiredField_returns400WithErrorResponse() throws Exception {
         mockMvc.perform(post("/api/orders")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(CreateOrderRequestFixture.missingSku())))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_FAILED"))
+                .andExpect(jsonPath("$.message").isString())
+                .andExpect(jsonPath("$.timestamp").isString());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 주문 조회 시 404 응답과 ORDER_NOT_FOUND 코드를 반환한다")
+    void getOrder_notFound_returns404WithErrorResponse() throws Exception {
+        mockMvc.perform(get("/api/orders/non-existent-id"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("ORDER_NOT_FOUND"))
+                .andExpect(jsonPath("$.message").isString())
+                .andExpect(jsonPath("$.timestamp").isString());
     }
 }

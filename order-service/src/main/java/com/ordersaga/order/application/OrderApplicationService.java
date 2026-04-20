@@ -1,6 +1,7 @@
 package com.ordersaga.order.application;
 
 import com.ordersaga.order.domain.Order;
+import com.ordersaga.order.domain.OrderNotFoundException;
 import com.ordersaga.order.domain.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,6 @@ public class OrderApplicationService {
 
     private Order findOrder(String orderId) {
         return orderRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("order not found: " + orderId));
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 }

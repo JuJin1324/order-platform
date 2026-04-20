@@ -12,8 +12,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import com.ordersaga.order.adapter.in.web.dto.ErrorResponse;
 import jakarta.validation.Valid;
-import org.springframework.http.ProblemDetail;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,7 +47,7 @@ public class OrderController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 조회 성공"),
             @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없음",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/{orderId}")
     public OrderResult getOrder(@PathVariable String orderId) {
@@ -62,7 +62,7 @@ public class OrderController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 생성 성공 (Saga 진행 중)"),
             @ApiResponse(responseCode = "400", description = "요청 값 검증 실패 (sku 누락, quantity ≤ 0, amount < 1)",
-                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping
     public OrderResult createOrder(@Valid @RequestBody CreateOrderRequest request) {
