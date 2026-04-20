@@ -48,7 +48,7 @@ public class OrderController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 조회 성공"),
             @ApiResponse(responseCode = "404", description = "주문을 찾을 수 없음",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/{orderId}")
     public OrderResult getOrder(@PathVariable String orderId) {
@@ -63,7 +63,7 @@ public class OrderController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 생성 성공 (Saga 진행 중)"),
             @ApiResponse(responseCode = "400", description = "요청 값 검증 실패 (sku 누락, quantity ≤ 0, amount < 1)",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public OrderResult createOrder(@Valid @RequestBody CreateOrderRequest request) {
