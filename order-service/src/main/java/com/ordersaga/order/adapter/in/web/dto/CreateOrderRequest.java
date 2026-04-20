@@ -19,9 +19,9 @@ public record CreateOrderRequest(
         @Positive(message = "quantity must be greater than zero")
         Integer quantity,
 
-        @Schema(description = "결제 금액 (원 단위, 최소 0.01)", example = "29900")
+        @Schema(description = "결제 금액 (원 단위, 최소 1)", example = "29900")
         @NotNull(message = "amount is required")
-        @DecimalMin(value = "0.01", message = "amount must be at least 0.01")
+        @DecimalMin(value = "1", message = "amount must be at least 1")
         BigDecimal amount
 ) {
 }

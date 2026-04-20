@@ -61,7 +61,7 @@ public class OrderController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "주문 생성 성공 (Saga 진행 중)"),
-            @ApiResponse(responseCode = "400", description = "요청 값 검증 실패 (sku 누락, quantity ≤ 0, amount < 0.01)",
+            @ApiResponse(responseCode = "400", description = "요청 값 검증 실패 (sku 누락, quantity ≤ 0, amount < 1)",
                     content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @PostMapping
