@@ -6,7 +6,8 @@
 
 ## 1. 고정 결정
 
-- `springdoc-openapi` 버전은 Spring Boot 3.x 호환 버전(`springdoc-openapi-starter-webmvc-ui`)을 사용한다.
+- `springdoc-openapi` 버전은 Spring Boot 4.x 호환 버전(`springdoc-openapi-starter-webmvc-ui:3.0.3`)을 사용한다.
+  - v2.x는 Spring Boot 3.x 전용, v3.x는 Spring Boot 4.x 전용이다 (parent: `spring-boot-starter-parent:4.0.5`).
 - Swagger UI 경로는 기본값(`/swagger-ui/index.html`)을 유지한다.
 - security 설정 없이 개발 환경에서 접근 가능하도록 둔다.
 - OpenAPI 명세 파일(`/v3/api-docs`)도 함께 노출한다. React 개발 시 API 스펙 확인 용도로 쓰인다.
@@ -25,8 +26,8 @@
 
 - `order-service/build.gradle`에 `springdoc-openapi-starter-webmvc-ui` 의존성 추가
 - `order-service/src/main/resources/application.yml`에 springdoc 기본 설정 추가
-  - `springdoc.api-docs.path=/v3/api-docs`
-  - `springdoc.swagger-ui.path=/swagger-ui.html`
+  - `springdoc.api-docs.path=/v3/api-docs` — OpenAPI JSON 명세를 노출하는 경로 (기본값과 동일). React 개발 시 API 스펙 확인 용도로 직접 접근하거나 Swagger UI가 내부적으로 이 경로를 참조한다.
+  - `springdoc.swagger-ui.path=/swagger-ui.html` — Swagger UI 진입점 경로 (기본값과 동일). 브라우저에서 `/swagger-ui/index.html`로 리다이렉트된다.
 - 기존 Spring Security 또는 CSRF 설정이 있다면 Swagger UI 경로를 허용 목록에 추가
 
 #### 이 Task에서 하지 않을 것
@@ -39,6 +40,24 @@
 
 - 기존 `order-service` 단위 테스트 전부 통과
 - 기존 `scenario-test` 전부 통과
+
+```bash
+./gradlew :order-service:test        # order-service 단위 테스트
+./gradlew :scenario-test:test        # 시나리오 테스트 (Kafka 필요)
+```
+
+**수동 확인 (서버 기동 후 브라우저에서 직접 확인)**
+
+```bash
+./gradlew :order-service:bootRun     # 서버 기동 (기본 포트 8081)
+```
+
+| 목적 | 주소 |
+|------|------|
+| Swagger UI | http://localhost:8081/swagger-ui/index.html |
+| OpenAPI JSON 명세 | http://localhost:8081/v3/api-docs |
+
+Swagger UI 접속 시 order-service 엔드포인트 목록이 렌더링되면 통과다.
 
 #### 머지 조건
 
