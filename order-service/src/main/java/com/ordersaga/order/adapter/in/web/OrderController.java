@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import com.ordersaga.order.adapter.in.web.dto.ErrorResponse;
 import jakarta.validation.Valid;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping(value = "/api/orders", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrderController {
     private final OrderProcessor orderProcessor;
     private final OrderApplicationService orderApplicationService;
@@ -64,7 +65,7 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "요청 값 검증 실패 (sku 누락, quantity ≤ 0, amount < 1)",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public OrderResult createOrder(@Valid @RequestBody CreateOrderRequest request) {
         CreateOrderCommand command = new CreateOrderCommand(
                 request.sku(),
