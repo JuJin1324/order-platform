@@ -25,6 +25,8 @@ Task 1·2는 "문서를 채우는 작업"이고, Task 3은 "문서와 코드의 
 - 모든 controller는 `produces`/`consumes`를 명시한다. Swagger UI에서 `*/*` 대신 `application/json`이 표시되도록 하고, 의도하지 않은 미디어 타입 수락을 방지한다.
   - 응답: `@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)` — 클래스 레벨에 선언해 전체 엔드포인트에 적용
   - 요청 Body가 있는 엔드포인트: `@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)`
+  - `@ApiResponse`의 오류 응답 `@Content`에도 `mediaType`을 명시한다. `produces` 설정은 정상 응답 경로에만 적용되고 `@Content`에는 전파되지 않는다.
+- `springdoc.override-with-generic-response: false`를 설정한다. 기본값(`true`)은 `@RestControllerAdvice`의 `@ExceptionHandler`를 모든 엔드포인트에 자동으로 추가한다. `false`로 설정하면 각 엔드포인트에 명시한 `@ApiResponse`만 표시된다.
 
 ---
 
