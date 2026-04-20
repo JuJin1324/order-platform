@@ -1,7 +1,7 @@
 # Epic 2 — 풀스택 확장 실행 계획
 
 > 작성일: 2026-04-16
-> 기반 문서: `problems/order-platform/plan-epics/order-platform-epics.md`
+> 기반 문서: `problems/order-platform/order-platform-management/plan-epics/order-platform-epics.md`
 > 범위: Epic 2 (Swagger + React SPA) — B 완료 기준까지
 
 ---
@@ -14,41 +14,19 @@
 
 ---
 
-## 기술 스택 결정
+## ADR 후보
 
-### 빌드 도구 — Vite + React + TypeScript
+### 프론트엔드 빌드 도구
 
-Vite + React + TypeScript 로 확정. 선택 과정에서 검토한 세 가지 선택지:
+**선택지**: Vite + React + TypeScript / Next.js / Create React App
 
-| | Vite + React | Next.js | Create React App |
-|---|---|---|---|
-| **성격** | 순수 SPA 빌드 도구 | React 풀스택 프레임워크 | 구 표준 SPA 도구 |
-| **현재 상태** | 현재 표준 | 활발히 유지됨 | deprecated (유지보수 중단) |
-| **Spring Boot와의 관계** | 완전히 분리된 별도 앱 | 자체 서버 기능 내장 (역할 중복) | 완전히 분리 |
-| **학습 맥락** | SPA 개념을 가장 순수하게 학습 가능 | SSR·파일 기반 라우팅 등 별도 개념 추가 | 학습 자료는 많으나 도구 노후화 |
+Spring Boot 백엔드가 이미 있는 상황에서 프론트엔드 빌드 도구를 고른다. 선택지마다 Spring Boot와의 역할 분리 방식, 현재 유지보수 상태, SPA 학습 목적과의 적합성이 다르다. 잘못 고르면 서버 기능 중복이나 도구 노후화 문제가 생기므로 명시적으로 근거를 남겨둔다.
 
-Vite + React를 선택한 이유:
-- Spring Boot 백엔드가 이미 있으므로 Next.js의 서버 기능은 오버엔지니어링이다. "백엔드는 Spring Boot, 프론트엔드는 SPA"라는 구조를 명확히 유지하는 데 Vite + React가 가장 적합하다.
-- SPA가 무엇인지 학습하는 목적에 가장 직접적이다. Next.js는 SSR·파일 기반 라우팅 같은 추가 개념을 함께 배워야 하지만, Vite + React는 SPA 자체에만 집중할 수 있다.
-- CRA는 현재 유지보수가 중단됐다.
+### 상태 관리 도구
 
-TypeScript를 추가한 이유:
-- 이미 알고 있어 별도 학습 비용이 없다.
-- API 응답 타입(`OrderResponse`, `OrderStatus` 등)을 명시적으로 정의할 수 있어, 백엔드 스펙 변경 시 프론트엔드 영향 범위가 즉시 드러난다.
-- Vite가 `react-ts` 템플릿을 기본 제공하므로 설정 비용도 없다.
+**선택지**: Redux / Context API / useState만 사용
 
-### 상태 관리 — Redux 미채택
-
-Epic 2에서 Redux를 도입하지 않는다. 이유:
-
-Epic 2의 상태는 세 가지가 전부다: 주문 생성 폼 입력값, API 응답으로 받은 주문 ID, 주문 상태 조회 결과. 페이지가 2개이고 두 페이지 사이에 주문 ID 하나만 넘기면 된다. `useState` + React Router의 `navigate(state)`로 충분히 해결된다.
-
-Redux가 필요해지는 시점은 다음 중 하나가 해당될 때다:
-- 여러 페이지·컴포넌트가 같은 상태를 공유해야 할 때 (예: 로그인 사용자 정보, 장바구니)
-- 상태 전환이 복잡하고 추적이 필요할 때
-- 컴포넌트 depth가 깊어져 props drilling이 고통스러워질 때
-
-Epic 2는 이 중 어느 것도 해당하지 않는다. 지금 Redux를 도입하면 React 자체를 배우는 데 써야 할 주의가 분산된다. 프로젝트가 커지면서 상태 공유 필요성이 생길 때 Context API 또는 Redux를 도입하는 것이 자연스러운 순서다.
+페이지 수, 컴포넌트 간 상태 공유 범위에 따라 적정 복잡도가 달라진다. 과도한 도구를 도입하면 React 학습 자체가 분산되고, 너무 단순하게 가면 코드가 얽힌다. Epic 2의 상태 규모를 기준으로 어디서 선을 그을지 결정한다.
 
 ---
 
