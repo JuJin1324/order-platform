@@ -44,7 +44,7 @@ API(타입·HTTP 호출) ← ViewModel(Hook) ← View(Page·Component)
 
 - `order-web/src/types/order.ts`: Swagger 문서 기반 DTO 타입 정의
   - `OrderRequest`, `OrderResponse`
-  - `OrderStatus` enum (`PENDING`, `CONFIRMED`, `CANCELLED`)
+  - `OrderStatus` enum (`CREATED`, `CONFIRMED`, `CANCELLED`)
 - `order-web/src/api/orderApi.ts`: HTTP 호출 함수
   - `createOrder(request: OrderRequest): Promise<OrderResponse>`
   - `getOrder(orderId: string): Promise<OrderResponse>`
