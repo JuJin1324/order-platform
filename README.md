@@ -124,6 +124,18 @@ Testcontainers로 Kafka를 띄우고 세 서비스를 함께 구동해 전체 Sa
 
 ---
 
+## 프론트엔드 실행 (React SPA)
+
+```bash
+cd order-web
+npm install
+npm run dev
+```
+
+브라우저에서 `http://localhost:5173` 접속.
+
+---
+
 ## 관련 문서
 
 ### 아키텍처

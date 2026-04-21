@@ -14,22 +14,6 @@
 
 ---
 
-## ADR 후보
-
-### 프론트엔드 빌드 도구
-
-**선택지**: Vite + React + TypeScript / Next.js / Create React App
-
-Spring Boot 백엔드가 이미 있는 상황에서 프론트엔드 빌드 도구를 고른다. 선택지마다 Spring Boot와의 역할 분리 방식, 현재 유지보수 상태, SPA 학습 목적과의 적합성이 다르다. 잘못 고르면 서버 기능 중복이나 도구 노후화 문제가 생기므로 명시적으로 근거를 남겨둔다.
-
-### 상태 관리 도구
-
-**선택지**: Redux / Context API / useState만 사용
-
-페이지 수, 컴포넌트 간 상태 공유 범위에 따라 적정 복잡도가 달라진다. 과도한 도구를 도입하면 React 학습 자체가 분산되고, 너무 단순하게 가면 코드가 얽힌다. Epic 2의 상태 규모를 기준으로 어디서 선을 그을지 결정한다.
-
----
-
 ## 전체 실행 흐름
 
 ```mermaid
@@ -147,11 +131,19 @@ graph LR
 
 프로젝트 생성, 멀티모듈 통합, 프록시 설정은 학습 후 한 번에 묶어서 완료한다. 이 세 가지가 "React 개발 환경이 동작한다"는 하나의 완료 기준 아래 묶이기 때문이다.
 
+### ADR 후보
+
+#### 프론트엔드 빌드 도구
+
+**선택지**: Vite + React + TypeScript / Next.js / Create React App
+
+Spring Boot 백엔드가 이미 있는 상황에서 프론트엔드 빌드 도구를 고른다. 선택지마다 Spring Boot와의 역할 분리 방식, 현재 유지보수 상태, SPA 학습 목적과의 적합성이 다르다. 잘못 고르면 서버 기능 중복이나 도구 노후화 문제가 생기므로 명시적으로 근거를 남겨둔다.
+
 ### 실행 완료 기준
 
 - [ ] SPA와 MPA의 차이를 한 문장으로 설명할 수 있는 상태
 - [ ] React 컴포넌트·JSX·`useState` 개념을 파악한 상태
-- [ ] 프로젝트 루트에 `frontend/` 디렉터리가 생성됨 (Vite + React + TypeScript, `react-ts` 템플릿 사용)
+- [ ] 프로젝트 루트에 `order-web/` 디렉터리가 생성됨 (Vite + React + TypeScript, `react-ts` 템플릿 사용)
 - [ ] `npm run dev`로 Vite 개발 서버 실행됨 (포트 5173)
 - [ ] `vite.config.ts`에 order-service 프록시 설정 완료 (`/api` → `http://localhost:8080`)
 - [ ] 브라우저에서 `http://localhost:5173` 접속 시 React 기본 화면 렌더링됨
@@ -197,6 +189,14 @@ View, ViewModel, API/데이터 계층이 명확히 분리된 구조를 잡는다
 ### 과정 맥락
 
 별도 학습 단계를 두지 않고 구현과 학습을 함께 하는 이유는, 개념을 먼저 다 이해한 후 코딩하는 접근보다 만들면서 부딪히는 접근이 SPA 감각을 더 빠르게 체득시키기 때문이다. React에서 ViewModel 역할은 Custom Hook이 자연스럽게 담당한다. `useOrderCreate`, `useOrderStatus` 같은 Hook이 상태와 API 호출을 캡슐화하고, 컴포넌트는 Hook이 돌려주는 값과 함수만 사용하는 구조가 이 단계의 설계 목표다.
+
+### ADR 후보
+
+#### 상태 관리 도구
+
+**선택지**: Redux / Context API / useState만 사용
+
+페이지 수, 컴포넌트 간 상태 공유 범위에 따라 적정 복잡도가 달라진다. 과도한 도구를 도입하면 React 학습 자체가 분산되고, 너무 단순하게 가면 코드가 얽힌다. Epic 2의 상태 규모를 기준으로 어디서 선을 그을지 결정한다.
 
 ### 실행 완료 기준
 

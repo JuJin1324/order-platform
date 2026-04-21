@@ -32,3 +32,7 @@ data/
 
 # Env
 .env
+
+# Frontend
+order-web/node_modules/
+order-web/dist/

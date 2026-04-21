@@ -42,13 +42,13 @@ API(타입·HTTP 호출) ← ViewModel(Hook) ← View(Page·Component)
 
 #### 핵심 작업
 
-- `frontend/src/types/order.ts`: Swagger 문서 기반 DTO 타입 정의
+- `order-web/src/types/order.ts`: Swagger 문서 기반 DTO 타입 정의
   - `OrderRequest`, `OrderResponse`
   - `OrderStatus` enum (`PENDING`, `CONFIRMED`, `CANCELLED`)
-- `frontend/src/api/orderApi.ts`: HTTP 호출 함수
+- `order-web/src/api/orderApi.ts`: HTTP 호출 함수
   - `createOrder(request: OrderRequest): Promise<OrderResponse>`
   - `getOrder(orderId: string): Promise<OrderResponse>`
-- 공통 fetch 래퍼(`frontend/src/api/client.ts` 등)는 호출 함수가 2개 이상 공통 로직을 실제로 공유하게 될 때만 추가한다
+- 공통 fetch 래퍼(`order-web/src/api/client.ts` 등)는 호출 함수가 2개 이상 공통 로직을 실제로 공유하게 될 때만 추가한다
 
 #### 설계 포인트
 
@@ -82,12 +82,12 @@ Custom Hook과 페이지 컴포넌트의 빈 뼈대를 만들어, Story 5 구현
 
 #### 핵심 작업
 
-- `frontend/src/hooks/useOrderCreate.ts`: 빈 Hook 뼈대
+- `order-web/src/hooks/useOrderCreate.ts`: 빈 Hook 뼈대
   - 반환 시그니처: `{ createOrder, isLoading, result, error }`
   - 내부 로직은 최소 (Story 5에서 구현)
-- `frontend/src/hooks/useOrderStatus.ts`: 빈 Hook 뼈대 (Story 6에서 구현)
-- `frontend/src/pages/OrderCreatePage.tsx`: `useOrderCreate`만 import하는 빈 페이지
-- `frontend/src/pages/OrderStatusPage.tsx`: `useOrderStatus`만 import하는 빈 페이지
+- `order-web/src/hooks/useOrderStatus.ts`: 빈 Hook 뼈대 (Story 6에서 구현)
+- `order-web/src/pages/OrderCreatePage.tsx`: `useOrderCreate`만 import하는 빈 페이지
+- `order-web/src/pages/OrderStatusPage.tsx`: `useOrderStatus`만 import하는 빈 페이지
 - React Router v6 설치 + `App.tsx` 라우팅 구성
   - `/orders/new` → `OrderCreatePage`
   - `/orders/:id` → `OrderStatusPage`
