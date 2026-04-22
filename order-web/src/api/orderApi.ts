@@ -1,4 +1,4 @@
-import { OrderRequest, OrderResponse } from '../types/order';
+import type { OrderRequest, OrderResponse } from '../types/order';
 
 export async function createOrder(request: OrderRequest): Promise<OrderResponse> {
   const res = await fetch('/api/orders', {

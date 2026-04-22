@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { getOrder } from '../api/orderApi';
-import { OrderResponse } from '../types/order';
+import type { OrderResponse } from '../types/order';
 
 export function useOrderStatus() {
   const [isLoading, setIsLoading] = useState(false);
