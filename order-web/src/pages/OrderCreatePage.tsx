@@ -1,12 +1,18 @@
 import { useState, FormEvent } from 'react';
 import { useOrderCreate } from '../hooks/useOrderCreate';
 
+function toErrorMessage(error: string): string {
+  if (error === '400') return '입력값이 올바르지 않습니다. (수량은 1 이상, 금액은 1원 이상)';
+  if (error === '500') return '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+  return '네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.';
+}
+
 export default function OrderCreatePage() {
   const { submitOrder, isLoading, result, error } = useOrderCreate();
 
-  const [sku, setSku] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [amount, setAmount] = useState('');
+  const [sku, setSku] = useState('ITEM-001');
+  const [quantity, setQuantity] = useState('2');
+  const [amount, setAmount] = useState('29900');
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -45,7 +51,7 @@ export default function OrderCreatePage() {
           <p>상태: {result.status}</p>
         </div>
       )}
-      {error && <p>오류: {error}</p>}
+      {error && <p>{toErrorMessage(error)}</p>}
     </div>
   );
 }
