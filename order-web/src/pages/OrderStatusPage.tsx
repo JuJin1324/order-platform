@@ -1,4 +1,5 @@
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import { useOrderStatus } from '../hooks/useOrderStatus';
 
