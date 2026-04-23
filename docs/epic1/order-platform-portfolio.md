@@ -1,5 +1,7 @@
 # Order Platform — Choreography Saga 구현 포트폴리오
 
+Epic 1 · 분산 트랜잭션 불일치를 EDA 보상으로 해결
+
 유주진 | Yoo JuJin
 
 📅 2026.03 – 2026.04 | https://github.com/JuJin1324/order-platform

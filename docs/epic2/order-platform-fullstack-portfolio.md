@@ -1,4 +1,6 @@
-# Order Platform — 풀스택 확장 포트폴리오 (Epic 2)
+# Order Platform — 풀스택 확장 포트폴리오
+
+Epic 2 · React SPA로 Saga 흐름 가시화
 
 유주진 | Yoo JuJin
 
