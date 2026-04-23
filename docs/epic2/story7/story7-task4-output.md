@@ -20,8 +20,21 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 ```
 
-1단계(build): Node.js 22 Alpine에서 `npm run build`로 정적 파일 생성 (`dist/`)
-2단계(serve): nginx Alpine에 `dist/`를 복사해 서빙. 최종 이미지에 Node.js가 포함되지 않아 이미지 크기가 작다.
+**React 배포의 핵심 개념 — 소스코드 vs 배포 파일**
+
+React 코드(`.tsx`, `.ts`)는 브라우저가 직접 읽지 못한다. Vite가 이 코드를 브라우저가 읽을 수 있는 JavaScript/HTML/CSS로 변환해줘야 한다. 이 변환 과정이 `npm run build`이고, 결과물이 `dist/` 폴더에 생긴다. 배포할 때 필요한 건 `dist/` 안의 정적 파일뿐이다.
+
+**왜 nginx인가**
+
+`dist/` 안의 정적 파일은 Node.js 없이 어떤 웹 서버로도 서빙할 수 있다. nginx는 정적 파일 서빙에 특화된 가볍고 빠른 웹 서버다. Vite 개발 서버는 개발 편의 기능(HMR, 프록시 등)을 위해 Node.js가 필요하지만, 배포 환경에서는 그런 기능이 불필요하다.
+
+**왜 멀티 스테이지 빌드인가**
+
+빌드(1단계)와 서빙(2단계)을 분리하는 이유는 최종 이미지 크기 때문이다. Node.js는 `npm run build`를 실행할 때만 필요하다. 빌드가 끝나면 Node.js, `node_modules`, 소스코드는 전부 필요 없고 `dist/`만 있으면 된다. 1단계에서 빌드하고 `dist/`만 2단계(nginx)로 넘기면, 최종 이미지에 Node.js가 포함되지 않아 이미지가 훨씬 가벼워진다.
+
+**흐름 요약**
+
+소스코드 → `npm run build`(Node.js) → `dist/` → nginx가 브라우저에 서빙
 
 ---
 
@@ -57,12 +70,12 @@ order-web:
   build:
     context: ./order-web
   ports:
-    - "5173:80"
+    - "80:80"
   depends_on:
     - order-service
 ```
 
-포트 `5173:80` — 호스트 5173을 컨테이너 80(nginx)에 매핑한다. Vite 개발 서버와 동일한 포트를 사용해 전환이 자연스럽다. 단, Vite 개발 서버와 동시에 실행하면 포트가 충돌할 수 있다.
+포트 `80:80` — 호스트 80을 컨테이너 80(nginx)에 매핑한다. Vite 개발 서버(5173)와 포트가 분리되어 동시에 실행해도 충돌하지 않는다. 브라우저에서 `http://localhost`로 접속한다.
 
 ---
 
@@ -90,7 +103,7 @@ order-web:
 
 ```bash
 make up
-curl http://127.0.0.1:5173
+curl http://localhost:80
 ```
 
 → HTTP 200, nginx가 order-web 정적 파일 서빙 확인
