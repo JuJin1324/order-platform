@@ -1,4 +1,4 @@
-import type { OrderRequest, OrderResponse } from '../types/order';
+import type { OrderRequest, OrderResponse, OrderStatusHistory } from '../types/order';
 
 export async function createOrder(request: OrderRequest): Promise<OrderResponse> {
   const res = await fetch('/api/orders', {
@@ -12,6 +12,12 @@ export async function createOrder(request: OrderRequest): Promise<OrderResponse>
 
 export async function getOrder(orderId: string): Promise<OrderResponse> {
   const res = await fetch(`/api/orders/${orderId}`);
+  if (!res.ok) throw new Error(`${res.status}`);
+  return res.json();
+}
+
+export async function getOrderStatusHistory(orderId: string): Promise<OrderStatusHistory[]> {
+  const res = await fetch(`/api/orders/${orderId}/status-history`);
   if (!res.ok) throw new Error(`${res.status}`);
   return res.json();
 }

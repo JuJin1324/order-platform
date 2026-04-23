@@ -13,3 +13,8 @@ export interface OrderResponse {
   quantity: number;
   amount: number;
 }
+
+export interface OrderStatusHistory {
+  status: OrderStatus;
+  changedAt: string;
+}
