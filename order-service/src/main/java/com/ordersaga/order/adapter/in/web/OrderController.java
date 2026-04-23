@@ -6,6 +6,8 @@ import com.ordersaga.order.application.CreateOrderCommand;
 import com.ordersaga.order.application.OrderApplicationService;
 import com.ordersaga.order.application.OrderResult;
 import com.ordersaga.order.application.OrderProcessor;
+import com.ordersaga.order.application.OrderStatusHistoryApplicationService;
+import com.ordersaga.order.application.OrderStatusHistoryResult;
 import com.ordersaga.order.adapter.in.web.dto.CreateOrderRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,15 +25,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/api/orders", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrderController {
     private final OrderProcessor orderProcessor;
     private final OrderApplicationService orderApplicationService;
+    private final OrderStatusHistoryApplicationService orderStatusHistoryApplicationService;
 
-    public OrderController(OrderProcessor orderProcessor, OrderApplicationService orderApplicationService) {
+    public OrderController(
+            OrderProcessor orderProcessor,
+            OrderApplicationService orderApplicationService,
+            OrderStatusHistoryApplicationService orderStatusHistoryApplicationService
+    ) {
         this.orderProcessor = orderProcessor;
         this.orderApplicationService = orderApplicationService;
+        this.orderStatusHistoryApplicationService = orderStatusHistoryApplicationService;
     }
 
     @Operation(summary = "헬스 체크", description = "서비스 정상 가동 여부를 확인한다.")
@@ -53,6 +63,13 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public OrderResult getOrder(@PathVariable String orderId) {
         return orderApplicationService.getOrder(orderId);
+    }
+
+    @Operation(summary = "주문 상태 이력 조회", description = "주문 ID로 상태 전이 이력을 시간순으로 조회한다.")
+    @ApiResponse(responseCode = "200", description = "이력 조회 성공 (주문이 없거나 이력이 없으면 빈 배열 반환)")
+    @GetMapping("/{orderId}/status-history")
+    public List<OrderStatusHistoryResult> getStatusHistory(@PathVariable String orderId) {
+        return orderStatusHistoryApplicationService.getHistory(orderId);
     }
 
     @Operation(

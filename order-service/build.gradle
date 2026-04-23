@@ -1,6 +1,7 @@
 dependencies {
     implementation project(':saga-events')
     implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.springframework.boot:spring-boot-starter-aspectj'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
 }
 
