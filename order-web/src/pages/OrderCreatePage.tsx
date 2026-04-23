@@ -32,34 +32,53 @@ export default function OrderCreatePage() {
   }
 
   return (
-    <div>
-      <h1>주문 생성</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>상품 ID (SKU)</label>
-          <input value={sku} onChange={(e) => setSku(e.target.value)} required />
-        </div>
-        <div>
-          <label>수량</label>
-          <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
-        </div>
-        <div>
-          <label>결제 금액 (원)</label>
-          <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} required />
-        </div>
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? '처리 중...' : '주문 생성'}
-        </button>
-      </form>
-
-      {result && (
-        <div>
-          <p>주문 완료</p>
-          <p>주문 ID: {result.orderId}</p>
-          <p>상태: {result.status}</p>
-        </div>
-      )}
-      {error && <p>{toErrorMessage(error)}</p>}
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-md w-full max-w-md p-8">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">주문 생성</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">상품 ID (SKU)</label>
+            <input
+              value={sku}
+              onChange={(e) => setSku(e.target.value)}
+              required
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">수량</label>
+            <input
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              required
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">결제 금액 (원)</label>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              required
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-medium py-2 rounded-lg transition-colors"
+          >
+            {isLoading ? '처리 중...' : '주문 생성'}
+          </button>
+        </form>
+        {error && (
+          <p className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+            {toErrorMessage(error)}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
