@@ -21,6 +21,15 @@ graph LR
 
 이 구조에서 중간 단계가 실패하면 이미 커밋된 앞 단계를 되돌릴 수단이 필요하다. 이것이 Saga 패턴이 해결하는 문제다.
 
+**기술 스택**
+
+| 구분 | 기술 |
+|------|------|
+| Application | Java 21, Spring Boot 4.0.1, Spring Data JPA, Spring AOP, springdoc-openapi 3.0.3 |
+| Messaging | Apache Kafka 4.2.0 |
+| Database | H2 (서비스별 독립 인메모리 DB) |
+| Test | JUnit 5, Testcontainers (실제 Kafka 브로커 기반 E2E 테스트) |
+
 ---
 
 ## 1. 어떤 문제인가

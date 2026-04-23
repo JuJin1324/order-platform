@@ -19,6 +19,16 @@ graph LR
     O -->|이력 조회| W
 ```
 
+**기술 스택**
+
+| 구분 | 기술 |
+|------|------|
+| Frontend | React 19.2, TypeScript 6.0, Vite 8, React Router 7, Tailwind CSS 4 |
+| Backend | Java 21, Spring Boot 4.0.1, Spring Data JPA, Spring AOP, springdoc-openapi 3.0.3 |
+| Messaging | Apache Kafka 4.2.0 |
+| Database | H2 (서비스별 독립 인메모리 DB) |
+| Infra | Docker Compose, Nginx 1.29.8 (order-web 정적 서빙) |
+
 ---
 
 ## 1. 어떤 문제인가
