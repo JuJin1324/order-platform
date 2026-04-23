@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import OrderCreatePage from './pages/OrderCreatePage';
 import OrderStatusPage from './pages/OrderStatusPage';
 
@@ -8,6 +8,7 @@ export default function App() {
       <Routes>
         <Route path="/orders/new" element={<OrderCreatePage />} />
         <Route path="/orders/:orderId/status" element={<OrderStatusPage />} />
+        <Route path="*" element={<Navigate to="/orders/new" replace />} />
       </Routes>
     </BrowserRouter>
   );

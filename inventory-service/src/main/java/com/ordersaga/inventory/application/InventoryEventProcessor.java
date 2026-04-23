@@ -32,7 +32,7 @@ public class InventoryEventProcessor {
                     result.deductedQuantity(),
                     result.remainingQuantity()
             ));
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException | IllegalArgumentException e) {
             inventoryEventPublisher.publishInventoryDeductionFailed(new InventoryDeductionFailedEvent(
                     event.orderId(),
                     event.sku(),

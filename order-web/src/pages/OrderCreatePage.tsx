@@ -12,7 +12,7 @@ export default function OrderCreatePage() {
   const { submitOrder, isLoading, result, error } = useOrderCreate();
   const navigate = useNavigate();
 
-  const [sku, setSku] = useState('ITEM-001');
+  const [sku, setSku] = useState('sku-001');
   const [quantity, setQuantity] = useState('2');
   const [amount, setAmount] = useState('29900');
 
