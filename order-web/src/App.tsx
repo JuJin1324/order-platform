@@ -7,7 +7,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/orders/new" element={<OrderCreatePage />} />
-        <Route path="/orders/:id" element={<OrderStatusPage />} />
+        <Route path="/orders/:orderId/status" element={<OrderStatusPage />} />
       </Routes>
     </BrowserRouter>
   );

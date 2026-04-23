@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useOrderCreate } from '../hooks/useOrderCreate';
 
 function toErrorMessage(error: string): string {
@@ -9,10 +10,17 @@ function toErrorMessage(error: string): string {
 
 export default function OrderCreatePage() {
   const { submitOrder, isLoading, result, error } = useOrderCreate();
+  const navigate = useNavigate();
 
   const [sku, setSku] = useState('ITEM-001');
   const [quantity, setQuantity] = useState('2');
   const [amount, setAmount] = useState('29900');
+
+  useEffect(() => {
+    if (result) {
+      navigate(`/orders/${result.orderId}/status`);
+    }
+  }, [result]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();

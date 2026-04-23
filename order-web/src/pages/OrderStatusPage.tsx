@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { useOrderStatus } from '../hooks/useOrderStatus';
 
 function toErrorMessage(error: string): string {
@@ -6,8 +7,13 @@ function toErrorMessage(error: string): string {
 }
 
 export default function OrderStatusPage() {
+  const { orderId: urlOrderId } = useParams<{ orderId: string }>();
   const { fetchHistory, refresh, isLoading, history, error } = useOrderStatus();
-  const [orderId, setOrderId] = useState('');
+  const [orderId, setOrderId] = useState(urlOrderId ?? '');
+
+  useEffect(() => {
+    if (urlOrderId) fetchHistory(urlOrderId);
+  }, [urlOrderId]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
