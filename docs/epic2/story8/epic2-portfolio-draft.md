@@ -164,7 +164,7 @@ graph TB
 
 실제 구동된 화면은 다음과 같다.
 
-<img src="./captures/create-order-page.png" alt="주문 생성 페이지" width="600">
+<img src="../captures/create-order-page.png" alt="주문 생성 페이지" width="600">
 
 브라우저에서 아래 두 시나리오를 직접 시연했다.
 
@@ -172,7 +172,7 @@ graph TB
 
 `sku-001`(재고 10개)로 주문을 생성한다. 주문 생성 폼을 제출하면 자동으로 상태 조회 페이지로 이동하고 `CREATED` 이력이 즉시 표시된다. 잠시 후 새로고침하면 Saga가 완료되어 `CONFIRMED(확인)` 이력이 추가된다.
 
-<img src="./captures/order-status-confirmed.png" alt="주문 상태 페이지 — CONFIRMED" width="600">
+<img src="../captures/order-status-confirmed.png" alt="주문 상태 페이지 — CONFIRMED" width="600">
 
 ```
 CREATED(생성됨) → CONFIRMED(확정됨)
@@ -182,7 +182,7 @@ CREATED(생성됨) → CONFIRMED(확정됨)
 
 존재하지 않는 SKU(`ITEM-001`)로 주문을 생성한다. 재고 서비스가 "inventory not found" 예외를 보상 이벤트로 발행하고, 보상 체인이 역방향으로 완주해 주문이 취소된다.
 
-<img src="./captures/order-status-cancelled.png" alt="주문 상태 페이지 — CANCELLED" width="600">
+<img src="../captures/order-status-cancelled.png" alt="주문 상태 페이지 — CANCELLED" width="600">
 
 ```
 CREATED(생성됨) → CANCELLED(취소됨)
